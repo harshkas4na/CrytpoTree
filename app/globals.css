@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #0f172a;
+  --background: #0a0f1a;
   --foreground: #e2e8f0;
   --card: #1e293b;
   --card-foreground: #e2e8f0;
@@ -37,17 +37,10 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #334155;
   --sidebar-ring: #3b82f6;
-  /* Crypto specific colors */
-  --crypto-core-tech: #94a3b8;
-  --crypto-chains: #3b82f6;
-  --crypto-infrastructure: #8b5cf6;
-  --crypto-defi: #f59e0b;
-  --crypto-apps: #10b981;
-  --crypto-grid: rgba(255, 255, 255, 0.02);
 }
 
 .dark {
-  --background: #0f172a;
+  --background: #0a0f1a;
   --foreground: #e2e8f0;
   --card: #1e293b;
   --card-foreground: #e2e8f0;
@@ -79,13 +72,6 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #334155;
   --sidebar-ring: #3b82f6;
-  /* Crypto specific colors */
-  --crypto-core-tech: #94a3b8;
-  --crypto-chains: #3b82f6;
-  --crypto-infrastructure: #8b5cf6;
-  --crypto-defi: #f59e0b;
-  --crypto-apps: #10b981;
-  --crypto-grid: rgba(255, 255, 255, 0.02);
 }
 
 @theme inline {
@@ -133,35 +119,80 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
-    position: relative;
-  }
-  
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 50px 50px;
-    pointer-events: none;
-    z-index: 0;
   }
 }
 
-@keyframes dash {
-  to {
-    stroke-dashoffset: 0;
-  }
+/* ========================================
+   REACT FLOW STYLES
+   ======================================== */
+
+.react-flow__node {
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .react-flow__edge path {
-  stroke-dasharray: 5, 5;
-  stroke-dashoffset: 10;
-  animation: dash 20s linear infinite;
+  transition: stroke-width 0.2s ease, opacity 0.2s ease;
+}
+
+/* ========================================
+   MINIMAP STYLES
+   ======================================== */
+
+.react-flow__minimap {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  border-radius: 12px !important;
+}
+
+.react-flow__minimap-mask {
+  fill: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* ========================================
+   CONTROLS STYLES
+   ======================================== */
+
+.react-flow__controls {
+  background: rgba(30, 41, 59, 0.9) !important;
+  border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border: none !important;
+  color: #94a3b8 !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-flow__controls-button:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #3b82f6 !important;
+}
+
+/* ========================================
+   SCROLLBAR STYLES
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
 }

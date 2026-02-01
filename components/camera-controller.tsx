@@ -1,0 +1,218 @@
+'use client';
+
+import { useCallback, useEffect, useRef } from 'react';
+import { useReactFlow, Node } from '@xyflow/react';
+import { useNavigation } from './navigation-context';
+import { CryptoNodeData, initialNodes } from '@/data/crypto-data';
+
+interface CameraControllerProps {
+    nodes: Node[];
+    edges: { source: string; target: string }[];
+    onNodeSelect: (node: CryptoNodeData) => void;
+}
+
+// Easing function for smooth camera movement
+const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+
+export function CameraController({ nodes, edges, onNodeSelect }: CameraControllerProps) {
+    const { setCenter, setViewport, getViewport, fitView } = useReactFlow();
+    const {
+        focusedNodeId,
+        setIsNavigating,
+        focusNode,
+    } = useNavigation();
+
+    const animationRef = useRef<number | null>(null);
+    const lastFocusedRef = useRef<string | null>(null);
+
+    // Find adjacent nodes for keyboard navigation
+    const findAdjacentNodes = useCallback((nodeId: string) => {
+        const parents: string[] = [];
+        const children: string[] = [];
+        const siblings: string[] = [];
+
+        // Find parent and children from edges
+        edges.forEach((edge) => {
+            if (edge.target === nodeId) {
+                parents.push(edge.source);
+            }
+            if (edge.source === nodeId) {
+                children.push(edge.target);
+            }
+        });
+
+        // Find siblings (nodes with the same parent)
+        if (parents.length > 0) {
+            edges.forEach((edge) => {
+                if (parents.includes(edge.source) && edge.target !== nodeId) {
+                    siblings.push(edge.target);
+                }
+            });
+        }
+
+        return { parents, children, siblings };
+    }, [edges]);
+
+    // Smooth camera fly-to animation
+    const flyToNode = useCallback((nodeId: string, duration: number = 800) => {
+        const node = nodes.find((n) => n.id === nodeId);
+        if (!node) return;
+
+        const startViewport = getViewport();
+        const targetX = node.position.x + 100; // Center on node (assuming ~200px width)
+        const targetY = node.position.y + 50;  // Center on node (assuming ~100px height)
+        const targetZoom = 1.2;
+
+        const startTime = performance.now();
+        setIsNavigating(true);
+
+        const animate = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = easeOutCubic(progress);
+
+            // Interpolate viewport position
+            const currentX = startViewport.x + ((-targetX * targetZoom + window.innerWidth / 2) - startViewport.x) * easedProgress;
+            const currentY = startViewport.y + ((-targetY * targetZoom + window.innerHeight / 2) - startViewport.y) * easedProgress;
+            const currentZoom = startViewport.zoom + (targetZoom - startViewport.zoom) * easedProgress;
+
+            setViewport({ x: currentX, y: currentY, zoom: currentZoom });
+
+            if (progress < 1) {
+                animationRef.current = requestAnimationFrame(animate);
+            } else {
+                setIsNavigating(false);
+                animationRef.current = null;
+            }
+        };
+
+        // Cancel any existing animation
+        if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current);
+        }
+
+        animationRef.current = requestAnimationFrame(animate);
+    }, [nodes, getViewport, setViewport, setIsNavigating]);
+
+    // Navigate when focused node changes
+    useEffect(() => {
+        if (focusedNodeId && focusedNodeId !== lastFocusedRef.current) {
+            flyToNode(focusedNodeId);
+            lastFocusedRef.current = focusedNodeId;
+        }
+    }, [focusedNodeId, flyToNode]);
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore if typing in an input
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                return;
+            }
+
+            if (!focusedNodeId) {
+                // If no node is focused, start at root
+                if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter', ' '].includes(e.key)) {
+                    e.preventDefault();
+                    focusNode('root');
+                }
+                return;
+            }
+
+            const { parents, children, siblings } = findAdjacentNodes(focusedNodeId);
+
+            switch (e.key) {
+                case 'ArrowDown':
+                case 'j': // Vim-style
+                    e.preventDefault();
+                    if (children.length > 0) {
+                        focusNode(children[0]);
+                    }
+                    break;
+
+                case 'ArrowUp':
+                case 'k': // Vim-style
+                    e.preventDefault();
+                    if (parents.length > 0) {
+                        focusNode(parents[0]);
+                    }
+                    break;
+
+                case 'ArrowLeft':
+                case 'h': // Vim-style
+                    e.preventDefault();
+                    if (siblings.length > 0) {
+                        // Find current sibling index and go to previous
+                        const currentNode = nodes.find(n => n.id === focusedNodeId);
+                        if (currentNode) {
+                            const sortedSiblings = [...siblings, focusedNodeId].sort((a, b) => {
+                                const nodeA = nodes.find(n => n.id === a);
+                                const nodeB = nodes.find(n => n.id === b);
+                                return (nodeA?.position.x || 0) - (nodeB?.position.x || 0);
+                            });
+                            const currentIndex = sortedSiblings.indexOf(focusedNodeId);
+                            if (currentIndex > 0) {
+                                focusNode(sortedSiblings[currentIndex - 1]);
+                            }
+                        }
+                    }
+                    break;
+
+                case 'ArrowRight':
+                case 'l': // Vim-style
+                    e.preventDefault();
+                    if (siblings.length > 0) {
+                        // Find current sibling index and go to next
+                        const currentNode = nodes.find(n => n.id === focusedNodeId);
+                        if (currentNode) {
+                            const sortedSiblings = [...siblings, focusedNodeId].sort((a, b) => {
+                                const nodeA = nodes.find(n => n.id === a);
+                                const nodeB = nodes.find(n => n.id === b);
+                                return (nodeA?.position.x || 0) - (nodeB?.position.x || 0);
+                            });
+                            const currentIndex = sortedSiblings.indexOf(focusedNodeId);
+                            if (currentIndex < sortedSiblings.length - 1) {
+                                focusNode(sortedSiblings[currentIndex + 1]);
+                            }
+                        }
+                    }
+                    break;
+
+                case 'Enter':
+                case ' ':
+                    e.preventDefault();
+                    // Open node details
+                    const nodeData = initialNodes.find(n => n.id === focusedNodeId);
+                    if (nodeData) {
+                        onNodeSelect(nodeData);
+                    }
+                    break;
+
+                case 'Home':
+                    e.preventDefault();
+                    focusNode('root');
+                    break;
+
+                case 'Escape':
+                    e.preventDefault();
+                    // Fit view to show all nodes
+                    fitView({ padding: 0.2, duration: 600 });
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [focusedNodeId, findAdjacentNodes, focusNode, nodes, onNodeSelect, fitView]);
+
+    // Cleanup animation on unmount
+    useEffect(() => {
+        return () => {
+            if (animationRef.current) {
+                cancelAnimationFrame(animationRef.current);
+            }
+        };
+    }, []);
+
+    return null; // This is a logic-only component
+}

@@ -7,10 +7,11 @@ import {
   CommandList,
   CommandItem,
   CommandGroup,
+  CommandEmpty,
 } from '@/components/ui/command';
-import { useReactFlow } from '@xyflow/react';
-import { CryptoNodeData, categoryLabels } from '@/data/crypto-data';
-import { Search } from 'lucide-react';
+import { CryptoNodeData, categoryLabels, categoryColors } from '@/data/crypto-data';
+import { Search, CheckCircle2, Lock } from 'lucide-react';
+import { useNavigation } from './navigation-context';
 
 interface CommandPaletteProps {
   nodes: CryptoNodeData[];
@@ -18,7 +19,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ nodes }: CommandPaletteProps) {
   const [open, setOpen] = useState(false);
-  const { setCenter, getNodes } = useReactFlow();
+  const { focusNode, selectNode } = useNavigation();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -33,16 +34,15 @@ export function CommandPalette({ nodes }: CommandPaletteProps) {
   }, []);
 
   const handleSelect = (nodeId: string) => {
-    const flowNodes = getNodes();
-    const node = flowNodes.find((n) => n.id === nodeId);
-    
+    const node = nodes.find((n) => n.id === nodeId);
+
     if (node) {
-      setCenter(node.position.x, node.position.y, {
-        zoom: 1.5,
-        duration: 600,
-      });
+      // Focus the node (this triggers camera fly-to via navigation context)
+      focusNode(nodeId);
+      // Also select it to open the sidebar
+      selectNode(node);
     }
-    
+
     setOpen(false);
   };
 
@@ -58,50 +58,84 @@ export function CommandPalette({ nodes }: CommandPaletteProps) {
     {} as Record<CryptoNodeData['category'], CryptoNodeData[]>
   );
 
+  // Check if a node is learned
+  const isLearned = (nodeId: string) => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(`learned-${nodeId}`) === 'true';
+  };
+
   return (
     <>
       {/* Search Button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600 hover:bg-slate-800 transition-all shadow-lg"
+        className="fixed top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-5 py-2.5 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-600/50 text-slate-300 hover:text-white hover:border-slate-500 hover:bg-slate-700/90 transition-all shadow-xl hover:shadow-2xl group"
       >
-        <Search size={16} />
-        <span className="text-sm">Search skills...</span>
-        <kbd className="ml-2 text-xs bg-slate-900/50 px-2 py-1 rounded border border-slate-600">
+        <Search size={18} className="text-slate-400 group-hover:text-blue-400 transition-colors" />
+        <span className="text-sm font-medium">Search the crypto universe...</span>
+        <kbd className="ml-3 text-xs bg-slate-900/80 px-2 py-1 rounded-md border border-slate-600 text-slate-400">
           ⌘K
         </kbd>
       </button>
 
       {/* Command Dialog */}
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search crypto skills..." />
-        <CommandList>
+        <CommandInput placeholder="Search skills, protocols, chains..." />
+        <CommandList className="max-h-[400px]">
+          <CommandEmpty>No skills found. Try a different search.</CommandEmpty>
           {Object.entries(groupedNodes).map(([category, categoryNodes]) => (
             <CommandGroup
               key={category}
-              heading={categoryLabels[category as CryptoNodeData['category']]}
-            >
-              {categoryNodes.map((node) => (
-                <CommandItem
-                  key={node.id}
-                  value={node.id}
-                  onSelect={handleSelect}
-                  className="flex items-center gap-3 cursor-pointer"
+              heading={
+                <span
+                  className="flex items-center gap-2"
+                  style={{ color: categoryColors[category as CryptoNodeData['category']] }}
                 >
-                  <div
+                  <span
                     className="w-2 h-2 rounded-full"
-                    style={{
-                      backgroundColor: node.learned ? '#10b981' : '#94a3b8',
-                    }}
+                    style={{ backgroundColor: categoryColors[category as CryptoNodeData['category']] }}
                   />
-                  <div>
-                    <div className="font-medium">{node.label}</div>
-                    <div className="text-xs text-slate-400">
-                      {node.description.substring(0, 50)}...
+                  {categoryLabels[category as CryptoNodeData['category']]}
+                </span>
+              }
+            >
+              {categoryNodes.map((node) => {
+                const learned = isLearned(node.id);
+                return (
+                  <CommandItem
+                    key={node.id}
+                    value={`${node.id} ${node.label} ${node.description}`}
+                    onSelect={() => handleSelect(node.id)}
+                    className="flex items-center gap-3 cursor-pointer py-3 px-3 rounded-lg hover:bg-slate-700/50"
+                  >
+                    {/* Learned Status Icon */}
+                    {learned ? (
+                      <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
+                    ) : (
+                      <Lock size={16} className="text-slate-500 flex-shrink-0" />
+                    )}
+
+                    {/* Node Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-white truncate">{node.label}</div>
+                      <div className="text-xs text-slate-400 truncate">
+                        {node.description.substring(0, 60)}...
+                      </div>
                     </div>
-                  </div>
-                </CommandItem>
-              ))}
+
+                    {/* Category indicator */}
+                    <div
+                      className="px-2 py-0.5 rounded text-xs font-medium flex-shrink-0"
+                      style={{
+                        backgroundColor: `${categoryColors[node.category]}20`,
+                        color: categoryColors[node.category],
+                      }}
+                    >
+                      {categoryLabels[node.category]}
+                    </div>
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           ))}
         </CommandList>
