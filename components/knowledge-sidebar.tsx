@@ -151,8 +151,8 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all relative ${activeTab === tab.id
-                      ? 'text-white'
-                      : 'text-slate-400 hover:text-slate-200'
+                    ? 'text-white'
+                    : 'text-slate-400 hover:text-slate-200'
                     }`}
                 >
                   {tab.icon}
@@ -185,6 +185,11 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
                       <p className="text-sm text-slate-400 leading-relaxed">
                         {node.description}
                       </p>
+                      {node.shortOverview && (
+                        <p className="text-sm text-slate-400 leading-relaxed mt-4">
+                          {node.shortOverview}
+                        </p>
+                      )}
                     </div>
 
                     {/* Prerequisites */}
@@ -265,17 +270,25 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
                     className="space-y-6"
                   >
                     <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                      <p className="text-sm text-slate-400 leading-relaxed">
-                        Detailed explanations and deep-dive content for <strong className="text-white">{node.label}</strong> will be added here. This section is designed to provide comprehensive learning material.
-                      </p>
+                      {node.deepInsight ? (
+                        <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
+                          {node.deepInsight}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-slate-400 leading-relaxed">
+                          Detailed explanations and deep-dive content for <strong className="text-white">{node.label}</strong> will be added here. This section is designed to provide comprehensive learning material.
+                        </p>
+                      )}
                     </div>
 
-                    <div className="text-center py-8">
-                      <Sparkles size={32} className="text-slate-600 mx-auto mb-3" />
-                      <p className="text-sm text-slate-500">
-                        Content coming soon...
-                      </p>
-                    </div>
+                    {!node.deepInsight && (
+                      <div className="text-center py-8">
+                        <Sparkles size={32} className="text-slate-600 mx-auto mb-3" />
+                        <p className="text-sm text-slate-500">
+                          Content coming soon...
+                        </p>
+                      </div>
+                    )}
                   </motion.div>
                 )}
 
@@ -352,8 +365,8 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
               <Button
                 onClick={handleMarkAsLearned}
                 className={`w-full py-5 text-sm font-semibold transition-all ${isLearned
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}
               >
                 {isLearned ? (
