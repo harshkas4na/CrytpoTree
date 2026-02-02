@@ -28,8 +28,8 @@ export function CategoryNav() {
             media.addEventListener('change', handleChange);
             return () => media.removeEventListener('change', handleChange);
         }
-        media.addListener(handleChange);
-        return () => media.removeListener(handleChange);
+        (media as any).addListener(handleChange);
+        return () => (media as any).removeListener(handleChange);
     }, []);
 
     useEffect(() => {
