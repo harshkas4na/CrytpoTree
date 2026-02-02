@@ -14,6 +14,9 @@ interface NavigationState {
   hoveredPath: Set<string>;
   // Camera animation in progress
   isNavigating: boolean;
+  // Focus system settings
+  focusDepth: number; // 1-3 levels of depth to show
+  showAllMode: boolean; // Toggle to show all nodes
 }
 
 interface NavigationContextType extends NavigationState {
@@ -26,6 +29,10 @@ interface NavigationContextType extends NavigationState {
   setIsNavigating: (value: boolean) => void;
   addToHistory: (nodeId: string) => void;
   clearHistory: () => void;
+  // Focus system actions
+  setFocusDepth: (depth: number) => void;
+  setShowAllMode: (value: boolean) => void;
+  toggleShowAllMode: () => void;
 }
 
 const NavigationContext = createContext<NavigationContextType | null>(null);
@@ -35,11 +42,13 @@ interface NavigationProviderProps {
 }
 
 export function NavigationProvider({ children }: NavigationProviderProps) {
-  const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null);
-  const [navigationHistory, setNavigationHistory] = useState<string[]>([]);
+  const [focusedNodeId, setFocusedNodeId] = useState<string | null>('root');
+  const [navigationHistory, setNavigationHistory] = useState<string[]>(['root']);
   const [selectedNode, setSelectedNode] = useState<CryptoNodeData | null>(null);
   const [hoveredPath, setHoveredPath] = useState<Set<string>>(new Set());
   const [isNavigating, setIsNavigating] = useState(false);
+  const [focusDepth, setFocusDepthState] = useState(3); // Default: show 3 levels for better overview
+  const [showAllMode, setShowAllModeState] = useState(false);
 
   const addToHistory = useCallback((nodeId: string) => {
     setNavigationHistory((prev) => {
@@ -86,12 +95,26 @@ export function NavigationProvider({ children }: NavigationProviderProps) {
     setFocusedNodeId(null);
   }, []);
 
+  const setFocusDepth = useCallback((depth: number) => {
+    setFocusDepthState(Math.max(1, Math.min(3, depth)));
+  }, []);
+
+  const setShowAllMode = useCallback((value: boolean) => {
+    setShowAllModeState(value);
+  }, []);
+
+  const toggleShowAllMode = useCallback(() => {
+    setShowAllModeState((prev) => !prev);
+  }, []);
+
   const value: NavigationContextType = {
     focusedNodeId,
     navigationHistory,
     selectedNode,
     hoveredPath,
     isNavigating,
+    focusDepth,
+    showAllMode,
     focusNode,
     selectNode,
     goBack,
@@ -100,6 +123,9 @@ export function NavigationProvider({ children }: NavigationProviderProps) {
     setIsNavigating,
     addToHistory,
     clearHistory,
+    setFocusDepth,
+    setShowAllMode,
+    toggleShowAllMode,
   };
 
   return (
@@ -118,3 +144,4 @@ export function useNavigation() {
 }
 
 export { NavigationContext };
+

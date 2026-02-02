@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   ReactFlow,
   Node,
@@ -27,13 +27,18 @@ import { CameraController } from './camera-controller';
 import { BreadcrumbTrail } from './breadcrumb-trail';
 import { CategoryNav } from './category-nav';
 import { KeyboardShortcutsHelp } from './keyboard-shortcuts-help';
+import { FocusControls } from './focus-controls';
+import { useFocusSystem, hasChildren, getDescendantCount } from './focus-system';
 
 const nodeTypes = {
   crypto: CryptoNode,
 };
 
 interface FlowNode extends Node {
-  data: CryptoNodeData;
+  data: CryptoNodeData & {
+    hasHiddenChildren?: boolean;
+    childCount?: number;
+  };
   position: XYPosition;
 }
 
@@ -49,7 +54,16 @@ function CryptoTreeInner() {
     setHoveredPath,
     focusedNodeId,
     focusNode,
+    focusDepth,
+    showAllMode,
   } = useNavigation();
+
+  // Use focus system to determine visible nodes
+  const { visibleNodeIds, expandableNodeIds } = useFocusSystem({
+    focusedNodeId,
+    focusDepth,
+    showAllMode,
+  });
 
   // Initialize nodes and edges with dagre layout
   useEffect(() => {
@@ -57,13 +71,13 @@ function CryptoTreeInner() {
     dagreGraph.setDefaultEdgeLabel(() => ({}));
     dagreGraph.setGraph({
       rankdir: 'TB',
-      nodesep: 100,
-      ranksep: 180,
+      nodesep: 60,   // Reduced horizontal spacing
+      ranksep: 100,  // Reduced vertical spacing
     });
 
-    // Add nodes to dagre
+    // Add nodes to dagre with smaller size
     initialNodes.forEach((node) => {
-      dagreGraph.setNode(node.id, { width: 220, height: 120 });
+      dagreGraph.setNode(node.id, { width: 180, height: 80 });
     });
 
     // Add edges to dagre
@@ -79,10 +93,17 @@ function CryptoTreeInner() {
     // Convert to React Flow nodes
     const newNodes: FlowNode[] = initialNodes.map((nodeData) => {
       const pos = dagreGraph.node(nodeData.id);
+      const nodeHasChildren = hasChildren(nodeData.id);
+      const childCount = nodeHasChildren ? getDescendantCount(nodeData.id) : 0;
+
       return {
         id: nodeData.id,
-        data: nodeData,
-        position: { x: pos.x - 110, y: pos.y - 60 },
+        data: {
+          ...nodeData,
+          hasHiddenChildren: false,
+          childCount,
+        },
+        position: { x: pos.x - 90, y: pos.y - 40 }, // Adjusted for smaller nodes
         type: 'crypto',
       };
     });
@@ -112,6 +133,25 @@ function CryptoTreeInner() {
     }, 100);
   }, [setNodes, setEdges, fitView]);
 
+  // Filter nodes and edges based on focus system
+  const filteredNodes = useMemo(() => {
+    return nodes
+      .filter((node) => visibleNodeIds.has(node.id))
+      .map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          hasHiddenChildren: expandableNodeIds.has(node.id),
+        },
+      }));
+  }, [nodes, visibleNodeIds, expandableNodeIds]);
+
+  const filteredEdges = useMemo(() => {
+    return edges.filter(
+      (edge) => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
+    );
+  }, [edges, visibleNodeIds]);
+
   // Handle node hover
   const handleNodeHover = useCallback((nodeId: string | null) => {
     if (!nodeId) {
@@ -123,13 +163,13 @@ function CryptoTreeInner() {
     connected.add(nodeId);
 
     // Find direct connections only (for performance)
-    edges.forEach((edge) => {
+    filteredEdges.forEach((edge) => {
       if (edge.source === nodeId) connected.add(edge.target);
       if (edge.target === nodeId) connected.add(edge.source);
     });
 
     setHoveredPath(connected);
-  }, [edges, setHoveredPath]);
+  }, [filteredEdges, setHoveredPath]);
 
   const handleNodeClick = useCallback((event: React.MouseEvent, node: FlowNode) => {
     selectNode(node.data);
@@ -141,7 +181,7 @@ function CryptoTreeInner() {
   }, [selectNode]);
 
   // Update node styles based on state
-  const nodesWithState = nodes.map((node) => {
+  const nodesWithState = filteredNodes.map((node) => {
     const isSelected = selectedNode?.id === node.id;
     const isFocused = focusedNodeId === node.id;
     const isInPath = hoveredPath.has(node.id);
@@ -160,7 +200,7 @@ function CryptoTreeInner() {
   });
 
   // Update edge styles based on hover state
-  const edgesWithState = edges.map((edge) => ({
+  const edgesWithState = filteredEdges.map((edge) => ({
     ...edge,
     style: {
       ...edge.style,
@@ -227,6 +267,9 @@ function CryptoTreeInner() {
 
       {/* Search */}
       <CommandPalette nodes={initialNodes} />
+
+      {/* Focus Controls */}
+      <FocusControls />
 
       {/* Keyboard Help */}
       <KeyboardShortcutsHelp />

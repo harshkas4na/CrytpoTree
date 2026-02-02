@@ -531,13 +531,13 @@ export const initialNodes: CryptoNodeData[] = [
     "id": "linea",
     "parentId": "zk-rollups",
     "label": "Linea",
-    "description": "ConsenSys zkEVM rollup with lattice-based proofs",
+    "description": "ConsenSys zkEVM rollup focused on EVM compatibility and low fees",
     "category": "chain",
     "dependencies": [
       "zk-rollups"
     ],
     "shortOverview": "A zkEVM developed by ConsenSys (creators of MetaMask and Infura).",
-    "deepInsight": "Deeply integrated with the MetaMask ecosystem. It uses a lattice-based prover which is designed to be highly efficient and quantum-resistant."
+    "deepInsight": "Linea is a zkEVM rollup built by ConsenSys, aiming for strong Ethereum compatibility so existing contracts and tooling work with minimal changes. Transactions execute off-chain and are bundled into validity proofs posted to Ethereum, lowering fees while inheriting L1 security. Its tight integration with MetaMask and Infura improves onboarding and distribution, but like all rollups it still relies on secure proving and bridge infrastructure."
   },
   {
     "id": "scroll",
@@ -753,7 +753,7 @@ export const initialNodes: CryptoNodeData[] = [
       "oracles"
     ],
     "shortOverview": "Oracles that update the blockchain with new data at regular intervals or when thresholds are met (e.g., price moves 0.5%).",
-    "deepInsight": "Traditionally used by Chainlink. Pros: Data is always there on-chain for any contract to read. Cons: Expensive gas costs to constantly update prices, even if no one is using them."
+    "deepInsight": "Push oracles proactively publish price data on-chain so any contract can read it instantly. This is ideal for composability: lending, perps, and vaults can all rely on the same shared feed. The downside is cost and waste — prices are updated even when no one needs them, so gas usage can be high during volatility or across many assets. Teams must balance freshness, cost, and update cadence."
   },
   {
     "id": "chainlink",
@@ -813,7 +813,7 @@ export const initialNodes: CryptoNodeData[] = [
       "pull-oracles"
     ],
     "shortOverview": "The oracle originally built by MakerDAO to secure DAI, now available as a general-purpose protocol.",
-    "deepInsight": "Chronicle pioneered the concept of Optimistic Oracles (in the Scribe module) and high-efficiency Schnorr signature aggregation to reduce gas costs for updates."
+    "deepInsight": "Chronicle was built to secure MakerDAO and later opened as a general-purpose oracle. It focuses on pull-based updates and efficient signature aggregation to keep gas costs low while preserving security. That makes it well suited for protocols that only need fresh data at the moment of execution. As with any pull oracle, responsibility shifts to integrators to ensure updates are fetched and submitted reliably."
   },
   {
     "id": "rpc-providers",
@@ -1089,7 +1089,7 @@ export const initialNodes: CryptoNodeData[] = [
       "defi-primitives"
     ],
     "shortOverview": "Platforms that allow users to trade cryptocurrencies directly with each other without an intermediary.",
-    "deepInsight": "Unlike Coinbase (where you deposit funds), on a DEX you trade directly from your wallet. You retain full custody of your assets at all times until the trade executes."
+    "deepInsight": "DEXs use smart contracts to let users trade directly from their wallets without giving custody to an exchange. Liquidity can come from pools (AMMs) or orderbooks, and pricing is determined on-chain. The upside is permissionless access and composability with other DeFi apps; the tradeoffs include slippage, MEV risks, and gas costs during congestion."
   },
   {
     "id": "amm",
@@ -1173,7 +1173,7 @@ export const initialNodes: CryptoNodeData[] = [
       "amm"
     ],
     "shortOverview": "The dominant DEX on BNB Chain, known for its fun branding and high retail usage.",
-    "deepInsight": "PancakeSwap cloned Uniswap's model but added gamification (Lottery, Prediction Markets) and high-yield farming, driving massive adoption on BNB Chain."
+    "deepInsight": "PancakeSwap brought AMM trading to BNB Chain and layered on farming, lotteries, and other gamified features to drive retail adoption. It now supports concentrated liquidity, making capital more efficient for LPs. Its growth is tightly linked to BNB Chain's user base and incentives, so liquidity quality and decentralization tradeoffs mirror the chain itself."
   },
   {
     "id": "dydx",
@@ -1197,7 +1197,7 @@ export const initialNodes: CryptoNodeData[] = [
       "dex-aggregators"
     ],
     "shortOverview": "The premier DEX aggregator.",
-    "deepInsight": "1inch's 'Pathfinder' algorithm is extremely complex, often routing a single trade through 5+ different pools to squeeze out the best exchange rate."
+    "deepInsight": "1inch routes trades across many DEXs to find the best execution, often splitting a single swap into multiple paths. It also offers limit orders and RFQ-style liquidity, making it useful for both retail and power users. The benefit is better pricing; the tradeoff is higher routing complexity and sometimes higher gas costs on congested chains."
   },
   {
     "id": "cowswap",
@@ -1353,7 +1353,7 @@ export const initialNodes: CryptoNodeData[] = [
       "fiat-backed-stables"
     ],
     "shortOverview": "The most regulated and transparent fiat-backed stablecoin, issued by Circle.",
-    "deepInsight": "USDC is the darling of DeFi due to its reliability. It is backed 100% by cash and short-term US treasuries. It is the primary collateral in many lending protocols and DEXs."
+    "deepInsight": "USDC is widely used in DeFi because its reserves are designed to be high-quality and regularly attested. It functions as a digital dollar for trading, lending, and payments, and is often the primary quote asset across markets. The tradeoff is centralization: Circle can freeze addresses and the token depends on traditional banking and regulatory infrastructure."
   },
   {
     "id": "usdt",
@@ -1543,7 +1543,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "staking-derivatives"
-    ]
+    ],
+    "shortOverview": "Frax's liquid staking design that splits liquidity (frxETH) from yield (sfrxETH).",
+    "deepInsight": "Frax Ether separates two roles: frxETH is a liquid token meant to track ETH's price, while sfrxETH is the yield-bearing token that accrues staking rewards. This lets DeFi users keep a liquid asset for trading and collateral while still having a path to staking yield. The tradeoff is added complexity and reliance on the peg between frxETH and ETH, plus smart contract and validator risks."
   },
   {
     "id": "derivatives",
@@ -1553,7 +1555,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "primitive",
     "dependencies": [
       "defi-primitives"
-    ]
+    ],
+    "shortOverview": "Financial contracts that provide exposure or leverage without holding the asset.",
+    "deepInsight": "On-chain derivatives let traders take long or short exposure, hedge positions, or access leverage with smart contracts. These protocols rely on oracles for fair pricing, margin systems for risk management, and liquidation engines to keep the system solvent. They can be capital efficient and composable, but introduce added risk from leverage, oracle failures, and rapid liquidations during volatility."
   },
   {
     "id": "perpetuals",
@@ -1563,7 +1567,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "primitive",
     "dependencies": [
       "derivatives"
-    ]
+    ],
+    "shortOverview": "Futures that never expire, kept in line with spot prices by funding payments.",
+    "deepInsight": "Perpetuals are leveraged contracts with no expiry date. Instead of settlement, they use a funding rate that periodically transfers value between longs and shorts to keep the perp price anchored to spot. Traders post margin, and if their position moves against them past a threshold they get liquidated. This enables deep liquidity and 24/7 trading, but makes funding costs and liquidation risk central to the experience."
   },
   {
     "id": "options",
@@ -1573,7 +1579,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "primitive",
     "dependencies": [
       "derivatives"
-    ]
+    ],
+    "shortOverview": "Protocols for buying and selling call/put options with defined downside.",
+    "deepInsight": "Options give the right, not the obligation, to buy or sell an asset at a preset strike before expiry. Buyers pay a premium for defined risk; sellers collect premiums but take on obligation risk. On-chain options often use vaults and automated market making to create liquidity, which simplifies access but can be sensitive to volatility spikes and thin markets."
   },
   {
     "id": "gmx",
@@ -1583,7 +1591,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "perpetuals"
-    ]
+    ],
+    "shortOverview": "Perpetuals DEX where a pooled vault acts as the counterparty to traders.",
+    "deepInsight": "GMX routes trades against a multi-asset liquidity pool (GLP) instead of an orderbook. This enables low-slippage trades and straightforward execution, while LPs earn fees and take the opposite side of trader PnL. Pricing relies on oracles rather than order matching, so oracle robustness and market volatility are key risks for both traders and LPs."
   },
   {
     "id": "synthetix",
@@ -1593,7 +1603,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "perpetuals"
-    ]
+    ],
+    "shortOverview": "A synthetic-asset platform powered by over-collateralized debt pools.",
+    "deepInsight": "Synthetix lets users mint synthetic assets by locking collateral into a shared debt pool. The protocol can offer deep liquidity and atomic swaps because the pool is the counterparty, not a single LP. The model is powerful but capital intensive, and participants are exposed to system-wide debt fluctuations and governance decisions."
   },
   {
     "id": "dogecoin",
@@ -1615,7 +1627,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "perpetuals"
-    ]
+    ],
+    "shortOverview": "Perpetual trading with synthetic exposure backed by a shared liquidity vault.",
+    "deepInsight": "Gains Network uses a pooled liquidity vault as counterparty for synthetic perps, which enables deep leverage without relying on traditional orderbooks. Trades are priced via oracles and risk engines rather than direct peer matching. The design can be capital efficient and simple for users, but it concentrates risk in the liquidity vault and relies heavily on oracle integrity."
   },
   {
     "id": "vertex",
@@ -1625,7 +1639,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "perpetuals"
-    ]
+    ],
+    "shortOverview": "A unified trading venue that combines spot, perps, and lending in one margin account.",
+    "deepInsight": "Vertex blends orderbook-style trading with AMM liquidity to offer tighter spreads and deeper markets. It supports cross-margining so users can reuse collateral across products, improving capital efficiency. The tradeoff is greater system complexity and reliance on Arbitrum infrastructure and sequencer availability."
   },
   {
     "id": "ribbon",
@@ -1635,7 +1651,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "options"
-    ]
+    ],
+    "shortOverview": "Automated options vaults that sell options to generate yield.",
+    "deepInsight": "Ribbon packages common options strategies (like covered calls) into vaults so users can earn premiums without managing positions manually. This can smooth yield in quiet markets, but it caps upside during rallies and can suffer drawdowns when volatility spikes."
   },
   {
     "id": "dopex",
@@ -1645,7 +1663,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "options"
-    ]
+    ],
+    "shortOverview": "An options protocol focused on concentrated liquidity and efficient option selling.",
+    "deepInsight": "Dopex introduces vaults that aggregate liquidity for specific strikes, making it easier to price and trade options on-chain. It also offers structured products to simplify participation. Like most options platforms, its liquidity can be fragmented by strike and expiry, and strategy risk remains significant for sellers."
   },
   {
     "id": "monero",
@@ -1667,7 +1687,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "primitive",
     "dependencies": [
       "solana"
-    ]
+    ],
+    "shortOverview": "DeFi built for speed, enabling low-fee trading and real-time market design.",
+    "deepInsight": "Solana's parallel execution and low fees make high-frequency orderbooks and rapid settlement viable on-chain. This attracts trading-focused applications like perps, aggregators, and high-throughput AMMs. The ecosystem benefits from performance but faces tradeoffs around infrastructure complexity, client diversity, and occasional network instability in periods of heavy load."
   },
   {
     "id": "jupiter",
@@ -1677,7 +1699,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "solana-defi"
-    ]
+    ],
+    "shortOverview": "The go-to routing layer for swapping tokens on Solana.",
+    "deepInsight": "Jupiter aggregates liquidity across Solana DEXs to find the best price, splitting routes when needed to reduce slippage. It expands beyond swaps with limit orders and perps tooling, making it a core trading hub. The routing layer improves execution, but can be sensitive to liquidity fragmentation and rapidly changing market conditions."
   },
   {
     "id": "raydium",
@@ -1687,7 +1711,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "solana-defi"
-    ]
+    ],
+    "shortOverview": "A flagship Solana AMM that blends pool liquidity with orderbook access.",
+    "deepInsight": "Raydium provides AMM liquidity for swaps while also tapping orderbook liquidity when available, aiming for better pricing. It is widely used for token launches and farming on Solana. LPs still face impermanent loss and volatility risks, and market depth depends on ecosystem activity."
   },
   {
     "id": "railgun",
@@ -1709,7 +1735,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "solana-defi"
-    ]
+    ],
+    "shortOverview": "Liquid staking for SOL that issues mSOL for DeFi use.",
+    "deepInsight": "Marinade lets users stake SOL while receiving mSOL, which can be used across DeFi for additional yield. It spreads delegation across validators to support decentralization. The main risks are smart contract security, validator performance, and market liquidity for mSOL."
   },
   {
     "id": "kamino",
@@ -1719,7 +1747,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "solana-defi"
-    ]
+    ],
+    "shortOverview": "Automated liquidity vaults and leverage strategies built for Solana.",
+    "deepInsight": "Kamino packages complex LP and leverage strategies into vaults so users can earn yield without constant rebalancing. It automates range management and can add leverage loops for higher returns. That convenience comes with strategy risk, liquidation risk, and dependence on Solana's fast-moving markets."
   },
   {
     "id": "drift",
@@ -1729,7 +1759,9 @@ export const initialNodes: CryptoNodeData[] = [
     "category": "player",
     "dependencies": [
       "solana-defi"
-    ]
+    ],
+    "shortOverview": "Perps and spot trading with cross-margining and a dynamic AMM.",
+    "deepInsight": "Drift combines spot and perpetual markets in a single risk engine, allowing cross-margin and capital efficiency. Its dynamic AMM adapts to market conditions to improve spreads. Like other perps venues, it depends on oracle accuracy and robust liquidation systems during volatility."
   },
   {
     "id": "io-net",
@@ -1789,7 +1821,7 @@ export const initialNodes: CryptoNodeData[] = [
       "root"
     ],
     "shortOverview": "The Amazon and eBay of digital goods.",
-    "deepInsight": "NFT Marketplaces aggregation liquidity for on-chain assets. While anyone can trade P2P, marketplaces provide discovery, safety checks, and royalties enforcement for creators."
+    "deepInsight": "NFT marketplaces aggregate liquidity and provide discovery for on-chain assets. They handle listings, search, escrowed sales, and reputation signals that make trading easier than raw peer-to-peer transfers. Many also support creator royalties and launchpads, though competitive pressures have made royalty enforcement inconsistent. The tradeoff is that centralized policies can shape which collections get visibility."
   },
   {
     "id": "opensea",
@@ -1825,7 +1857,7 @@ export const initialNodes: CryptoNodeData[] = [
       "nft-marketplaces"
     ],
     "shortOverview": "The leading marketplace for Solana and Bitcoin Ordinals.",
-    "deepInsight": "Magic Eden started on Solana but pioneered the market for Bitcoin demand (Ordinals/Runes). It is known for its strong community focus and excellent user experience."
+    "deepInsight": "Magic Eden built its reputation on Solana with fast UX and strong community focus, then expanded to Bitcoin collectibles and EVM chains. It offers launchpads, collection verification, and cross-chain discovery to pull liquidity into one venue. Growth across multiple ecosystems brings reach, but also forces tradeoffs around fee structures, royalty norms, and fragmented liquidity."
   },
   {
     "id": "immutable",
@@ -1850,6 +1882,274 @@ export const initialNodes: CryptoNodeData[] = [
     ],
     "shortOverview": "The app that successfully monetized social clout.",
     "deepInsight": "Friend.tech allows you to buy 'Keys' to a person. Holding a key grants access to their private chatroom. key prices scale on a bonding curve, meaning the more people buy, the more expensive it gets. It turned friendship into a speculative asset."
+  },
+  // ==================== NEW MODERN CHAINS ====================
+  // New L1s (Monolithic)
+  {
+    "id": "monad",
+    "parentId": "monolithic",
+    "label": "Monad",
+    "description": "10,000 TPS EVM L1 with parallel execution and optimistic concurrency",
+    "category": "chain",
+    "dependencies": ["monolithic"],
+    "shortOverview": "The fastest EVM-compatible L1, achieving 10,000 TPS through parallel execution.",
+    "deepInsight": "Monad introduces 'optimistic parallel execution' where transactions are executed concurrently and conflicts are resolved later. Combined with MonadBFT consensus and MonadDb (a custom database), it achieves 1-second finality while remaining fully EVM-compatible. This lets existing Ethereum dApps migrate without code changes."
+  },
+  {
+    "id": "sonic",
+    "parentId": "monolithic",
+    "label": "Sonic (Fantom)",
+    "description": "High-speed L1 with sub-second finality and FeeM monetization for developers",
+    "category": "chain",
+    "dependencies": ["monolithic"],
+    "shortOverview": "Fantom's next evolution - a high-performance L1 with native developer monetization.",
+    "deepInsight": "Sonic represents Fantom's rebrand and upgrade, featuring 10,000+ TPS and sub-second finality. Its killer feature is 'Fee Monetization' (FeeM) - developers earn up to 90% of the gas fees generated by their dApps, creating sustainable incentives for building on the chain."
+  },
+  {
+    "id": "berachain",
+    "parentId": "layer1",
+    "label": "Berachain",
+    "description": "EVM-identical L1 with Proof-of-Liquidity consensus and tri-token model",
+    "category": "chain",
+    "dependencies": ["layer1"],
+    "shortOverview": "A unique L1 where providing liquidity IS the consensus mechanism.",
+    "deepInsight": "Berachain flips the script on PoS. Instead of staking tokens, validators must provide liquidity to approved pools. The tri-token model (BERA for gas, BGT for governance earned through LP, HONEY as native stablecoin) creates a flywheel where DeFi activity directly strengthens network security."
+  },
+  // New L2s
+  {
+    "id": "megaeth",
+    "parentId": "optimistic-rollups",
+    "label": "MegaETH",
+    "description": "Real-time blockchain with 100ms block times and 100,000+ TPS",
+    "category": "chain",
+    "dependencies": ["optimistic-rollups"],
+    "shortOverview": "The first 'real-time' blockchain - blocks every 100 milliseconds.",
+    "deepInsight": "MegaETH aims to make blockchain as responsive as traditional servers. With 100ms block times (vs Ethereum's 12 seconds) and 100k+ TPS, it enables use cases previously impossible: real-time gaming, high-frequency trading, and instant social interactions. It achieves this through specialized hardware and novel state management."
+  },
+  {
+    "id": "movement",
+    "parentId": "zk-rollups",
+    "label": "Movement Labs",
+    "description": "Move-based L2 bringing Aptos/Sui developer experience to Ethereum",
+    "category": "chain",
+    "dependencies": ["zk-rollups"],
+    "shortOverview": "The Move language meets Ethereum - best of both worlds.",
+    "deepInsight": "Movement bridges the gap between Move-based chains (Aptos, Sui) and the Ethereum ecosystem. Developers can write in Move (known for safety and resource-oriented programming) while settling on Ethereum. This unlocks Move's security benefits without sacrificing Ethereum's liquidity and composability."
+  },
+  {
+    "id": "eclipse",
+    "parentId": "optimistic-rollups",
+    "label": "Eclipse",
+    "description": "Solana Virtual Machine (SVM) as an Ethereum L2",
+    "category": "chain",
+    "dependencies": ["optimistic-rollups"],
+    "shortOverview": "Solana's speed with Ethereum's security - SVM as an L2.",
+    "deepInsight": "Eclipse is a modular L2 that uses the Solana Virtual Machine for execution but settles on Ethereum. This gives developers Solana's parallel processing and low fees while inheriting Ethereum's security. It's the embodiment of modular blockchain design - picking the best execution layer for your needs."
+  },
+  // ==================== EXPANDED SOLANA ECOSYSTEM ====================
+  {
+    "id": "jito",
+    "parentId": "solana-defi",
+    "label": "Jito",
+    "description": "MEV infrastructure and liquid staking with JitoSOL on Solana",
+    "category": "player",
+    "dependencies": ["solana-defi"],
+    "shortOverview": "Solana's MEV layer and leading liquid staking provider.",
+    "deepInsight": "Jito brings MEV (Maximal Extractable Value) infrastructure to Solana, allowing searchers to bundle transactions. JitoSOL is a liquid staking token that passes MEV rewards to stakers, often yielding higher returns than vanilla staking. It's crucial infrastructure for Solana's DeFi ecosystem."
+  },
+  {
+    "id": "tensor",
+    "parentId": "solana-defi",
+    "label": "Tensor",
+    "description": "Pro-trader NFT marketplace with AMM pools on Solana",
+    "category": "player",
+    "dependencies": ["solana-defi"],
+    "shortOverview": "The 'Bloomberg Terminal' for Solana NFT trading.",
+    "deepInsight": "Tensor revolutionized Solana NFT trading with professional features: real-time charts, instant listing/delisting, and AMM pools for instant liquidity. It treats NFTs as financial assets, enabling strategies like floor sweeping and collection-level trading."
+  },
+  {
+    "id": "pump-fun",
+    "parentId": "solana-defi",
+    "label": "Pump.fun",
+    "description": "Viral memecoin launchpad with bonding curve mechanics",
+    "category": "player",
+    "dependencies": ["solana-defi"],
+    "shortOverview": "The memecoin factory - launch a token in 2 minutes.",
+    "deepInsight": "Pump.fun democratized token creation with its bonding curve model. Anyone can launch a memecoin with no upfront liquidity. As people buy, the price increases along a curve. When market cap reaches $69k, liquidity is automatically migrated to Raydium. It's become a cultural phenomenon on Solana."
+  },
+  {
+    "id": "orca",
+    "parentId": "solana-defi",
+    "label": "Orca",
+    "description": "User-friendly AMM with concentrated liquidity (Whirlpools) on Solana",
+    "category": "player",
+    "dependencies": ["solana-defi"],
+    "shortOverview": "Solana's most user-friendly DEX with efficient concentrated liquidity.",
+    "deepInsight": "Orca pioneered concentrated liquidity on Solana with 'Whirlpools'. Known for its clean UX and fair-launch tokenomics, it's a go-to for new projects launching tokens. Its focus on simplicity made DeFi accessible to Solana newcomers."
+  },
+  // ==================== EXPANDED BASE ECOSYSTEM ====================
+  {
+    "id": "base-defi",
+    "parentId": "base",
+    "label": "Base DeFi Ecosystem",
+    "description": "The DeFi primitives native to Coinbase's L2",
+    "category": "primitive",
+    "dependencies": ["base"],
+    "shortOverview": "Base's rapidly growing DeFi ecosystem with unique protocols.",
+    "deepInsight": "Base has attracted a vibrant DeFi ecosystem thanks to Coinbase's distribution (100M+ users) and OP Stack reliability. It's become the home for consumer crypto apps, social tokens, and new DeFi experiments."
+  },
+  {
+    "id": "aerodrome",
+    "parentId": "base-defi",
+    "label": "Aerodrome",
+    "description": "Leading DEX on Base using ve(3,3) tokenomics",
+    "category": "player",
+    "dependencies": ["base-defi"],
+    "shortOverview": "Base's liquidity hub - the Uniswap of the Coinbase L2.",
+    "deepInsight": "Aerodrome is a fork of Velodrome (Optimism's top DEX), using ve(3,3) tokenomics where voting power decays and must be renewed. Protocols bribe AERO lockers to direct emissions to their pools, creating an efficient liquidity marketplace. It processes over $100M daily volume."
+  },
+  {
+    "id": "moonwell",
+    "parentId": "base-defi",
+    "label": "Moonwell",
+    "description": "Lending protocol native to Base with safety-first design",
+    "category": "player",
+    "dependencies": ["base-defi"],
+    "shortOverview": "Base's premier lending market - borrow and lend with confidence.",
+    "deepInsight": "Moonwell brought battle-tested lending to Base, focusing on security and simplicity. It supports major assets like ETH, USDC, and cbETH, serving as the backbone for leverage strategies on the chain."
+  },
+  {
+    "id": "friend-tech-base",
+    "parentId": "base-defi",
+    "label": "SocialFi on Base",
+    "description": "Social tokens and creator economy protocols on Base",
+    "category": "primitive",
+    "dependencies": ["base-defi"],
+    "shortOverview": "Base has become the home of social token experiments.",
+    "deepInsight": "Friend.tech launched the SocialFi movement on Base. Now countless social token protocols, creator coins, and community tokens call Base home, leveraging Coinbase's smooth onboarding for mainstream users."
+  },
+  // ==================== SOCIALFI CATEGORY ====================
+  {
+    "id": "socialfi",
+    "parentId": "root",
+    "label": "SocialFi",
+    "description": "Decentralized social media and creator economy protocols",
+    "category": "chain-group",
+    "dependencies": ["root"],
+    "shortOverview": "Where social media meets financial ownership - you own your audience.",
+    "deepInsight": "SocialFi reimagines social media with crypto primitives. Instead of platforms owning your followers and content, you own a portable social graph. Creators can monetize directly through tokens, NFTs, and on-chain subscriptions without intermediaries taking 30%+ cuts."
+  },
+  {
+    "id": "farcaster",
+    "parentId": "socialfi",
+    "label": "Farcaster",
+    "description": "Decentralized social protocol with Warpcast client and Frames",
+    "category": "player",
+    "dependencies": ["socialfi"],
+    "shortOverview": "Crypto Twitter's successor - a protocol, not a platform.",
+    "deepInsight": "Farcaster separates the social protocol from clients. Your identity and social graph live on-chain; anyone can build apps on top. 'Frames' allow interactive mini-apps within posts (mint NFTs, swap tokens, vote). It's where crypto-native users are migrating for uncensorable discourse."
+  },
+  {
+    "id": "lens",
+    "parentId": "socialfi",
+    "label": "Lens Protocol",
+    "description": "Composable social graph by Aave team on Polygon",
+    "category": "player",
+    "dependencies": ["socialfi"],
+    "shortOverview": "Your social identity as NFTs - own your followers forever.",
+    "deepInsight": "Built by Aave's team, Lens represents your social presence as NFTs: your profile is an NFT, follows are NFTs, content is NFTs. This makes your social graph portable across any app built on Lens. It's like owning your Instagram account as property you can sell or license."
+  },
+  // ==================== AI x CRYPTO EXPANSION ====================
+  {
+    "id": "ai-crypto",
+    "parentId": "root",
+    "label": "AI x Crypto",
+    "description": "The intersection of artificial intelligence and blockchain technology",
+    "category": "chain-group",
+    "dependencies": ["root"],
+    "shortOverview": "Decentralized AI - compute, models, and agents owned by the people.",
+    "deepInsight": "AI x Crypto tackles the centralization of AI by giants like OpenAI and Google. Crypto provides: decentralized compute (no single point of control), open model marketplaces (anyone can contribute and earn), verifiable inference (prove the AI output is genuine), and autonomous agents with their own wallets."
+  },
+  {
+    "id": "bittensor",
+    "parentId": "ai-crypto",
+    "label": "Bittensor (TAO)",
+    "description": "Decentralized machine learning network with subnet architecture",
+    "category": "player",
+    "dependencies": ["ai-crypto"],
+    "shortOverview": "The 'Bitcoin of AI' - a network of competing AI models.",
+    "deepInsight": "Bittensor creates a marketplace of AI models organized into 'subnets'. Miners run AI models and compete to provide the best outputs; validators evaluate quality. Top performers earn TAO tokens. Anyone can create subnets for different AI tasks: text, image, prediction, etc."
+  },
+  {
+    "id": "akash",
+    "parentId": "ai-crypto",
+    "label": "Akash Network",
+    "description": "Decentralized cloud compute marketplace for AI workloads",
+    "category": "player",
+    "dependencies": ["ai-crypto"],
+    "shortOverview": "The 'Airbnb of cloud' - rent unused GPUs at 80% discount.",
+    "deepInsight": "Akash is a permissionless marketplace matching compute suppliers (anyone with servers) with buyers. It's 3-10x cheaper than AWS/GCP because it aggregates underutilized capacity. With the AI boom, Akash has become crucial for running LLM inference and training at scale."
+  },
+  {
+    "id": "render",
+    "parentId": "ai-crypto",
+    "label": "Render Network",
+    "description": "Distributed GPU rendering for AI, 3D graphics, and media",
+    "category": "player",
+    "dependencies": ["ai-crypto"],
+    "shortOverview": "Hollywood-grade rendering powered by a decentralized GPU network.",
+    "deepInsight": "Render started as distributed GPU rendering for 3D artists and studios. With AI's GPU hunger, it's pivoted to support AI workloads. Node operators earn RNDR tokens for providing compute, while creators get access to massive parallel processing power."
+  },
+  {
+    "id": "ocean",
+    "parentId": "ai-crypto",
+    "label": "Ocean Protocol",
+    "description": "Decentralized data marketplace for AI training and analytics",
+    "category": "player",
+    "dependencies": ["ai-crypto"],
+    "shortOverview": "Buy and sell data securely - fuel for AI models.",
+    "deepInsight": "Ocean enables data monetization without losing control. Data owners can publish datasets; AI developers pay to access them. 'Compute-to-Data' lets algorithms run on the data without the data ever leaving the owner's custody - crucial for sensitive datasets."
+  },
+  {
+    "id": "morpheus-ai",
+    "parentId": "ai-agents",
+    "label": "Morpheus",
+    "description": "Decentralized network for personal AI agents with Smart Agent Protocol",
+    "category": "player",
+    "dependencies": ["ai-agents"],
+    "shortOverview": "Your personal AI agent that can pay, trade, and work for you.",
+    "deepInsight": "Morpheus builds personal AI agents that connect to your wallet. These agents can execute on-chain actions: swap tokens, manage positions, pay for services. Unlike ChatGPT, your Morpheus agent has economic agency - it can earn and spend crypto autonomously."
+  },
+  // ==================== DEPIN EXPANSION ====================
+  {
+    "id": "helium",
+    "parentId": "depin",
+    "label": "Helium",
+    "description": "Decentralized wireless network for IoT and 5G coverage",
+    "category": "player",
+    "dependencies": ["depin"],
+    "shortOverview": "People-powered wireless - earn crypto for hosting hotspots.",
+    "deepInsight": "Helium pioneered DePIN by incentivizing individuals to deploy LoRaWAN hotspots for IoT devices. It has since expanded to 5G. Over 1 million hotspots globally provide coverage, disrupting traditional telecom's capital-intensive model. Migrated to Solana for scalability."
+  },
+  {
+    "id": "hivemapper",
+    "parentId": "depin",
+    "label": "Hivemapper",
+    "description": "Decentralized mapping network using dashcams",
+    "category": "player",
+    "dependencies": ["depin"],
+    "shortOverview": "Drive and earn - build Google Maps through dashcam footage.",
+    "deepInsight": "Hivemapper pays drivers with HONEY tokens to collect street-level imagery using specialized dashcams. This crowdsourced approach creates maps that are fresher and cheaper than Google's camera cars. The data is valuable for autonomous vehicles and logistics companies."
+  },
+  {
+    "id": "dimo",
+    "parentId": "depin",
+    "label": "DIMO",
+    "description": "User-owned vehicle data network",
+    "category": "player",
+    "dependencies": ["depin"],
+    "shortOverview": "Own your car's data and get paid for sharing it.",
+    "deepInsight": "DIMO lets vehicle owners monetize the data their cars generate (mileage, battery health, driving patterns). Plug in a device, earn DIMO tokens when companies use your data. Users maintain control over their data while creating value from an asset they already own."
   }
 ];
 

@@ -11,15 +11,17 @@ interface CameraControllerProps {
     onNodeSelect: (node: CryptoNodeData) => void;
 }
 
-// Easing function for smooth camera movement
-const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+// Smooth easing function
+const easeOutExpo = (t: number): number =>
+    t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
 
 export function CameraController({ nodes, edges, onNodeSelect }: CameraControllerProps) {
-    const { setCenter, setViewport, getViewport, fitView } = useReactFlow();
+    const { setViewport, getViewport, fitView } = useReactFlow();
     const {
         focusedNodeId,
         setIsNavigating,
         focusNode,
+        isNavigating,
     } = useNavigation();
 
     const animationRef = useRef<number | null>(null);
@@ -31,7 +33,6 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
         const children: string[] = [];
         const siblings: string[] = [];
 
-        // Find parent and children from edges
         edges.forEach((edge) => {
             if (edge.target === nodeId) {
                 parents.push(edge.source);
@@ -41,7 +42,6 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
             }
         });
 
-        // Find siblings (nodes with the same parent)
         if (parents.length > 0) {
             edges.forEach((edge) => {
                 if (parents.includes(edge.source) && edge.target !== nodeId) {
@@ -53,15 +53,20 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
         return { parents, children, siblings };
     }, [edges]);
 
-    // Smooth camera fly-to animation
-    const flyToNode = useCallback((nodeId: string, duration: number = 800) => {
+    // Simple smooth fly-to animation
+    const flyToNode = useCallback((nodeId: string) => {
         const node = nodes.find((n) => n.id === nodeId);
         if (!node) return;
 
+        const duration = 400; // Fast and smooth
         const startViewport = getViewport();
-        const targetX = node.position.x + 100; // Center on node (assuming ~200px width)
-        const targetY = node.position.y + 50;  // Center on node (assuming ~100px height)
-        const targetZoom = 1.2;
+        const targetX = node.position.x + 90; // Center on smaller node
+        const targetY = node.position.y + 40;
+        const targetZoom = 0.9; // Zoom out a bit to see more context
+
+        // Calculate end viewport position
+        const endX = -targetX * targetZoom + window.innerWidth / 2;
+        const endY = -targetY * targetZoom + window.innerHeight / 2;
 
         const startTime = performance.now();
         setIsNavigating(true);
@@ -69,12 +74,12 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
         const animate = (currentTime: number) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const easedProgress = easeOutCubic(progress);
+            const eased = easeOutExpo(progress);
 
-            // Interpolate viewport position
-            const currentX = startViewport.x + ((-targetX * targetZoom + window.innerWidth / 2) - startViewport.x) * easedProgress;
-            const currentY = startViewport.y + ((-targetY * targetZoom + window.innerHeight / 2) - startViewport.y) * easedProgress;
-            const currentZoom = startViewport.zoom + (targetZoom - startViewport.zoom) * easedProgress;
+            // Simple interpolation
+            const currentX = startViewport.x + (endX - startViewport.x) * eased;
+            const currentY = startViewport.y + (endY - startViewport.y) * eased;
+            const currentZoom = startViewport.zoom + (targetZoom - startViewport.zoom) * eased;
 
             setViewport({ x: currentX, y: currentY, zoom: currentZoom });
 
@@ -110,8 +115,10 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
                 return;
             }
 
+            // Ignore if animation in progress
+            if (isNavigating) return;
+
             if (!focusedNodeId) {
-                // If no node is focused, start at root
                 if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter', ' '].includes(e.key)) {
                     e.preventDefault();
                     focusNode('root');
@@ -123,7 +130,7 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
 
             switch (e.key) {
                 case 'ArrowDown':
-                case 'j': // Vim-style
+                case 'j':
                     e.preventDefault();
                     if (children.length > 0) {
                         focusNode(children[0]);
@@ -131,7 +138,7 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
                     break;
 
                 case 'ArrowUp':
-                case 'k': // Vim-style
+                case 'k':
                     e.preventDefault();
                     if (parents.length > 0) {
                         focusNode(parents[0]);
@@ -139,10 +146,9 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
                     break;
 
                 case 'ArrowLeft':
-                case 'h': // Vim-style
+                case 'h':
                     e.preventDefault();
                     if (siblings.length > 0) {
-                        // Find current sibling index and go to previous
                         const currentNode = nodes.find(n => n.id === focusedNodeId);
                         if (currentNode) {
                             const sortedSiblings = [...siblings, focusedNodeId].sort((a, b) => {
@@ -159,10 +165,9 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
                     break;
 
                 case 'ArrowRight':
-                case 'l': // Vim-style
+                case 'l':
                     e.preventDefault();
                     if (siblings.length > 0) {
-                        // Find current sibling index and go to next
                         const currentNode = nodes.find(n => n.id === focusedNodeId);
                         if (currentNode) {
                             const sortedSiblings = [...siblings, focusedNodeId].sort((a, b) => {
@@ -181,7 +186,6 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
                 case 'Enter':
                 case ' ':
                     e.preventDefault();
-                    // Open node details
                     const nodeData = initialNodes.find(n => n.id === focusedNodeId);
                     if (nodeData) {
                         onNodeSelect(nodeData);
@@ -195,15 +199,14 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
 
                 case 'Escape':
                     e.preventDefault();
-                    // Fit view to show all nodes
-                    fitView({ padding: 0.2, duration: 600 });
+                    fitView({ padding: 0.2, duration: 400 });
                     break;
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [focusedNodeId, findAdjacentNodes, focusNode, nodes, onNodeSelect, fitView]);
+    }, [focusedNodeId, findAdjacentNodes, focusNode, nodes, onNodeSelect, fitView, isNavigating]);
 
     // Cleanup animation on unmount
     useEffect(() => {
@@ -214,5 +217,5 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
         };
     }, []);
 
-    return null; // This is a logic-only component
+    return null;
 }

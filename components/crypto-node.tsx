@@ -2,7 +2,7 @@
 
 import { Handle, Position } from '@xyflow/react';
 import { motion } from 'framer-motion';
-import { Lock, CheckCircle2 } from 'lucide-react';
+import { Lock, CheckCircle2, ChevronDown, Layers } from 'lucide-react';
 import { CryptoNodeData, categoryColors, categoryLabels } from '@/data/crypto-data';
 import { useEffect, useState } from 'react';
 
@@ -12,6 +12,8 @@ interface CryptoNodeProps {
     focused?: boolean;
     isHovered?: boolean;
     isDimmed?: boolean;
+    hasHiddenChildren?: boolean;
+    childCount?: number;
   };
   selected?: boolean;
 }
@@ -20,6 +22,8 @@ export function CryptoNode({ data }: CryptoNodeProps) {
   const nodeSelected = data.selected || false;
   const nodeFocused = data.focused || false;
   const nodeDimmed = data.isDimmed || false;
+  const hasHiddenChildren = data.hasHiddenChildren || false;
+  const childCount = data.childCount || 0;
   const color = categoryColors[data.category];
 
   const [isLearned, setIsLearned] = useState(false);
@@ -41,12 +45,16 @@ export function CryptoNode({ data }: CryptoNodeProps) {
   }, [data.id]);
 
   return (
-    <div
+    <motion.div
       className="relative"
-      style={{
-        transform: nodeFocused ? 'scale(1.05)' : 'scale(1)',
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{
         opacity: nodeDimmed ? 0.25 : 1,
-        transition: 'transform 0.3s ease, opacity 0.3s ease',
+        scale: nodeFocused ? 1.05 : 1,
+      }}
+      transition={{
+        duration: 0.3,
+        ease: [0.4, 0, 0.2, 1],
       }}
     >
       {/* Target Handle (Top) */}
@@ -56,35 +64,51 @@ export function CryptoNode({ data }: CryptoNodeProps) {
         className="!w-3 !h-3 !bg-slate-600 !border-2 !border-slate-500"
       />
 
-      {/* Main Card */}
-      <div
+      {/* Main Card - More Compact */}
+      <motion.div
+        whileHover={{ y: -1, scale: 1.01 }}
+        transition={{ duration: 0.15 }}
         className={`
-          relative px-5 py-4 rounded-xl cursor-pointer
-          transition-all duration-200
-          min-w-[200px] max-w-[220px]
+          relative px-3 py-2.5 rounded-lg cursor-pointer
+          transition-all duration-150
+          min-w-[160px] max-w-[180px]
+          backdrop-blur-md
           ${nodeSelected || nodeFocused
-            ? 'shadow-xl ring-2 ring-offset-2 ring-offset-slate-900'
-            : 'shadow-lg hover:shadow-xl'
+            ? 'shadow-lg ring-1 ring-offset-1 ring-offset-slate-900'
+            : 'shadow-md hover:shadow-lg'
           }
         `}
         style={{
-          background: `linear-gradient(135deg, ${color}20 0%, ${color}10 100%)`,
+          background: `linear-gradient(135deg, ${color}20 0%, ${color}08 100%)`,
           borderWidth: '1px',
           borderStyle: 'solid',
-          borderColor: nodeSelected || nodeFocused ? color : `${color}50`,
+          borderColor: nodeSelected || nodeFocused ? color : `${color}40`,
           boxShadow: nodeSelected || nodeFocused
-            ? `0 0 20px ${color}40`
-            : `0 4px 12px rgba(0,0,0,0.3)`,
+            ? `0 0 30px ${color}50, 0 8px 32px rgba(0,0,0,0.4)`
+            : `0 4px 20px rgba(0,0,0,0.3)`,
           // @ts-ignore - CSS variable for ring color
           '--tw-ring-color': color,
         }}
       >
+        {/* Focused Glow Effect */}
+        {nodeFocused && (
+          <motion.div
+            className="absolute inset-0 rounded-xl pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            style={{
+              background: `radial-gradient(circle at center, ${color}30 0%, transparent 70%)`,
+            }}
+          />
+        )}
+
         {/* Category Badge */}
         <div className="flex items-center justify-between mb-2">
           <div
             className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium"
             style={{
-              backgroundColor: `${color}30`,
+              backgroundColor: `${color}25`,
               color: color,
             }}
           >
@@ -94,6 +118,14 @@ export function CryptoNode({ data }: CryptoNodeProps) {
             />
             {categoryLabels[data.category]}
           </div>
+
+          {/* Child Count Badge */}
+          {childCount > 0 && (
+            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-400">
+              <Layers size={10} />
+              <span className="text-[10px] font-medium">{childCount}</span>
+            </div>
+          )}
         </div>
 
         {/* Title */}
@@ -102,20 +134,34 @@ export function CryptoNode({ data }: CryptoNodeProps) {
         </h3>
 
         {/* Status Indicator */}
-        <div className="flex items-center gap-2">
-          {isLearned ? (
-            <>
-              <CheckCircle2 size={14} className="text-emerald-400" />
-              <span className="text-xs font-medium text-emerald-400">Mastered</span>
-            </>
-          ) : (
-            <>
-              <Lock size={14} className="text-slate-400" />
-              <span className="text-xs text-slate-400">Explore</span>
-            </>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {isLearned ? (
+              <>
+                <CheckCircle2 size={14} className="text-emerald-400" />
+                <span className="text-xs font-medium text-emerald-400">Mastered</span>
+              </>
+            ) : (
+              <>
+                <Lock size={14} className="text-slate-400" />
+                <span className="text-xs text-slate-400">Explore</span>
+              </>
+            )}
+          </div>
+
+          {/* Expand Hint */}
+          {hasHiddenChildren && (
+            <motion.div
+              animate={{ y: [0, 2, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="flex items-center gap-1 text-blue-400"
+            >
+              <ChevronDown size={14} />
+              <span className="text-[10px] font-medium">More</span>
+            </motion.div>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Source Handle (Bottom) */}
       <Handle
@@ -123,6 +169,6 @@ export function CryptoNode({ data }: CryptoNodeProps) {
         position={Position.Bottom}
         className="!w-3 !h-3 !bg-slate-600 !border-2 !border-slate-500"
       />
-    </div>
+    </motion.div>
   );
 }

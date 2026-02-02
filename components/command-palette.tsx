@@ -27,6 +27,15 @@ export function CommandPalette({ nodes }: CommandPaletteProps) {
         e.preventDefault();
         setOpen((open) => !open);
       }
+
+      if (e.key === '/' && !(e.metaKey || e.ctrlKey)) {
+        const target = e.target as HTMLElement | null;
+        const tag = target?.tagName?.toLowerCase();
+        if (tag !== 'input' && tag !== 'textarea' && !target?.isContentEditable) {
+          e.preventDefault();
+          setOpen(true);
+        }
+      }
     };
 
     document.addEventListener('keydown', down);
@@ -69,18 +78,19 @@ export function CommandPalette({ nodes }: CommandPaletteProps) {
       {/* Search Button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-5 py-2.5 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-600/50 text-slate-300 hover:text-white hover:border-slate-500 hover:bg-slate-700/90 transition-all shadow-xl hover:shadow-2xl group"
+        className="fixed top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-6 py-3 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-600/50 text-slate-300 hover:text-white hover:border-slate-500 hover:bg-slate-800/90 transition-all shadow-xl hover:shadow-2xl group"
       >
         <Search size={18} className="text-slate-400 group-hover:text-blue-400 transition-colors" />
-        <span className="text-sm font-medium">Search the crypto universe...</span>
-        <kbd className="ml-3 text-xs bg-slate-900/80 px-2 py-1 rounded-md border border-slate-600 text-slate-400">
-          ⌘K
-        </kbd>
+        <span className="text-sm font-medium">Search topics, protocols, chains...</span>
+        <div className="ml-3 flex items-center gap-2 text-xs text-slate-400">
+          <kbd className="bg-slate-900/80 px-2 py-1 rounded-md border border-slate-600">/</kbd>
+          <kbd className="bg-slate-900/80 px-2 py-1 rounded-md border border-slate-600">⌘K</kbd>
+        </div>
       </button>
 
       {/* Command Dialog */}
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search skills, protocols, chains..." />
+        <CommandInput placeholder="Search concepts, protocols, chains..." />
         <CommandList className="max-h-[400px]">
           <CommandEmpty>No skills found. Try a different search.</CommandEmpty>
           {Object.entries(groupedNodes).map(([category, categoryNodes]) => (

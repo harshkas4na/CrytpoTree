@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Github, CheckCircle2, Lock, BookOpen, Link2, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Github, CheckCircle2, Lock, BookOpen, Link2, ArrowRight, Sparkles, Lightbulb, Layers3, Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CryptoNodeData, categoryLabels, categoryColors, initialNodes } from '@/data/crypto-data';
 import { useNavigation } from './navigation-context';
@@ -57,6 +57,31 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
 
   const color = node ? categoryColors[node.category] : '#3b82f6';
 
+  const getDeepDiveText = () => {
+    if (!node) return '';
+    const fallback = [node.shortOverview, node.description].filter(Boolean).join(' ');
+    return (node.deepInsight || fallback).trim();
+  };
+
+  const splitSentences = (text: string) => {
+    const cleaned = text.replace(/\s+/g, ' ').trim();
+    const matches = cleaned.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
+    return matches.map((sentence) => sentence.trim()).filter(Boolean);
+  };
+
+  const pickSentence = (sentences: string[], matcher: RegExp) => {
+    return sentences.find((sentence) => matcher.test(sentence)) || '';
+  };
+
+  const deepDiveText = getDeepDiveText();
+  const deepDiveSentences = splitSentences(deepDiveText);
+  const coreIdea = deepDiveSentences[0] || deepDiveText;
+  const howItWorks = deepDiveSentences[1] || '';
+  const whyItMatters = deepDiveSentences[2] || pickSentence(deepDiveSentences, /why|because|so that|enable|allows?/i);
+  const tradeoffs = pickSentence(deepDiveSentences, /but|however|trade-?off|downside|risk|cost|expensive|limitations?/i);
+  const examples = pickSentence(deepDiveSentences, /for example|e\.g\.|like|such as|in practice/i);
+  const takeaways = deepDiveSentences.slice(0, 3);
+
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
     { id: 'overview', label: 'Overview', icon: <BookOpen size={14} /> },
     { id: 'details', label: 'Deep Dive', icon: <Sparkles size={14} /> },
@@ -83,7 +108,7 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-screen w-[420px] bg-slate-900/95 backdrop-blur-xl border-l border-slate-700/50 z-50 flex flex-col shadow-2xl"
+            className="fixed right-0 top-0 h-screen w-[460px] bg-slate-900/95 backdrop-blur-xl border-l border-slate-700/50 z-50 flex flex-col shadow-2xl"
           >
             {/* Header */}
             <div
@@ -122,6 +147,12 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
               >
                 {node.label}
               </motion.h2>
+
+              {node.shortOverview && (
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  {node.shortOverview}
+                </p>
+              )}
 
               {/* Status Badge */}
               <motion.div
@@ -179,18 +210,38 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
                     exit={{ opacity: 0, y: -10 }}
                     className="space-y-6"
                   >
-                    {/* Description */}
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-300 mb-3">Description</h3>
-                      <p className="text-sm text-slate-400 leading-relaxed">
+                    {/* Summary */}
+                    <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                      <h3 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wide">
+                        Quick Summary
+                      </h3>
+                      <p className="text-sm text-slate-300 leading-relaxed">
                         {node.description}
                       </p>
-                      {node.shortOverview && (
-                        <p className="text-sm text-slate-400 leading-relaxed mt-4">
-                          {node.shortOverview}
-                        </p>
+                      {whyItMatters && (
+                        <div className="mt-4 flex items-start gap-3 text-sm text-slate-400">
+                          <Lightbulb size={16} className="text-amber-400 mt-0.5" />
+                          <p className="leading-relaxed">{whyItMatters}</p>
+                        </div>
                       )}
                     </div>
+
+                    {/* Key Takeaways */}
+                    {takeaways.length > 0 && (
+                      <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                        <h3 className="text-xs font-semibold text-slate-300 mb-3 uppercase tracking-wide">
+                          Key Takeaways
+                        </h3>
+                        <div className="space-y-2">
+                          {takeaways.map((item) => (
+                            <div key={item} className="flex items-start gap-3 text-sm text-slate-400">
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mt-2" />
+                              <p className="leading-relaxed">{item}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Prerequisites */}
                     {prerequisiteNodes.length > 0 && (
@@ -269,23 +320,54 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
                     exit={{ opacity: 0, y: -10 }}
                     className="space-y-6"
                   >
-                    <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                      {node.deepInsight ? (
-                        <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
-                          {node.deepInsight}
-                        </p>
-                      ) : (
-                        <p className="text-sm text-slate-400 leading-relaxed">
-                          Detailed explanations and deep-dive content for <strong className="text-white">{node.label}</strong> will be added here. This section is designed to provide comprehensive learning material.
-                        </p>
-                      )}
+                    <div className="p-5 rounded-xl bg-slate-800/60 border border-slate-700/50">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wide mb-3">
+                        <Layers3 size={14} className="text-blue-400" />
+                        Core Idea
+                      </div>
+                      <p className="text-sm text-slate-300 leading-relaxed">
+                        {coreIdea}
+                      </p>
                     </div>
 
-                    {!node.deepInsight && (
-                      <div className="text-center py-8">
-                        <Sparkles size={32} className="text-slate-600 mx-auto mb-3" />
-                        <p className="text-sm text-slate-500">
-                          Content coming soon...
+                    {howItWorks && (
+                      <div className="p-5 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wide mb-3">
+                          <Sparkles size={14} className="text-indigo-300" />
+                          How It Works
+                        </div>
+                        <p className="text-sm text-slate-400 leading-relaxed">{howItWorks}</p>
+                      </div>
+                    )}
+
+                    {tradeoffs && (
+                      <div className="p-5 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wide mb-3">
+                          <Scale size={14} className="text-amber-400" />
+                          Tradeoffs
+                        </div>
+                        <p className="text-sm text-slate-400 leading-relaxed">{tradeoffs}</p>
+                      </div>
+                    )}
+
+                    {examples && (
+                      <div className="p-5 rounded-xl bg-slate-800/30 border border-slate-700/50">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wide mb-3">
+                          <BookOpen size={14} className="text-emerald-400" />
+                          In Practice
+                        </div>
+                        <p className="text-sm text-slate-400 leading-relaxed">{examples}</p>
+                      </div>
+                    )}
+
+                    {deepDiveText && (
+                      <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-700/50">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wide mb-3">
+                          <Sparkles size={14} className="text-blue-300" />
+                          Full Deep Dive
+                        </div>
+                        <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
+                          {deepDiveText}
                         </p>
                       </div>
                     )}
@@ -300,6 +382,26 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
                     exit={{ opacity: 0, y: -10 }}
                     className="space-y-4"
                   >
+                    <a
+                      href={`https://x.com/search?q=${encodeURIComponent(node.label + ' crypto')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-4 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-600 transition-all group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center">
+                        <svg className="w-4 h-4 text-slate-200" viewBox="0 0 1200 1227" fill="currentColor">
+                          <path d="M714.163 519.284 1160.89 0H1056.55L668.734 450.887 363.748 0H0l468.492 681.821L0 1226.37h104.341l411.164-478.039 328.039 478.039H1200L714.137 519.284h.026ZM568.138 687.828l-47.846-68.538-380.06-544.79h165.58l306.186 438.274 47.846 68.538 398.892 570.886h-165.58L568.138 687.854v-.026Z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white group-hover:text-blue-400 transition-colors">
+                          Search on X
+                        </p>
+                        <p className="text-xs text-slate-500">Live conversations and threads</p>
+                      </div>
+                      <ArrowRight size={16} className="text-slate-500 group-hover:text-blue-400" />
+                    </a>
+
                     <a
                       href={`https://www.google.com/search?q=${encodeURIComponent(node.label + ' crypto blockchain')}`}
                       target="_blank"
