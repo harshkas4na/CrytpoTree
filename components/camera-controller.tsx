@@ -62,7 +62,7 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
         const startViewport = getViewport();
         const targetX = node.position.x + 90; // Center on smaller node
         const targetY = node.position.y + 40;
-        const targetZoom = 0.9; // Zoom out a bit to see more context
+        const targetZoom = typeof window !== 'undefined' && window.innerWidth < 640 ? 0.65 : 0.9;
 
         // Calculate end viewport position
         const endX = -targetX * targetZoom + window.innerWidth / 2;
@@ -197,10 +197,12 @@ export function CameraController({ nodes, edges, onNodeSelect }: CameraControlle
                     focusNode('root');
                     break;
 
-                case 'Escape':
+                case 'Escape': {
                     e.preventDefault();
-                    fitView({ padding: 0.2, duration: 400 });
+                    const padding = typeof window !== 'undefined' && window.innerWidth < 640 ? 0.35 : 0.2;
+                    fitView({ padding, duration: 400 });
                     break;
+                }
             }
         };
 

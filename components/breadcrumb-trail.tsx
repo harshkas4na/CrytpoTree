@@ -29,7 +29,7 @@ export function BreadcrumbTrail() {
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="fixed top-20 left-6 z-40 flex items-center gap-1 px-4 py-2 rounded-xl bg-slate-800/80 backdrop-blur-md border border-slate-700/50 shadow-lg"
+            className="fixed top-20 left-6 z-40 hidden sm:flex items-center gap-1 px-4 py-2 rounded-xl bg-slate-800/80 backdrop-blur-md border border-slate-700/50 shadow-lg"
         >
             {/* Home button */}
             <motion.button

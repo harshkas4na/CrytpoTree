@@ -29,6 +29,7 @@ import { CategoryNav } from './category-nav';
 import { KeyboardShortcutsHelp } from './keyboard-shortcuts-help';
 import { FocusControls } from './focus-controls';
 import { useFocusSystem, hasChildren, getDescendantCount } from './focus-system';
+import { MobileControlsDrawer } from './mobile-controls-drawer';
 
 const nodeTypes = {
   crypto: CryptoNode,
@@ -129,7 +130,8 @@ function CryptoTreeInner() {
 
     // Fit view after layout
     setTimeout(() => {
-      fitView({ padding: 0.15, duration: 500 });
+      const padding = typeof window !== 'undefined' && window.innerWidth < 640 ? 0.35 : 0.15;
+      fitView({ padding, duration: 500 });
     }, 100);
   }, [setNodes, setEdges, fitView]);
 
@@ -238,7 +240,7 @@ function CryptoTreeInner() {
         proOptions={{ hideAttribution: true }}
       >
         <Background color="#1e293b" gap={60} size={1} />
-        <Controls position="bottom-left" showInteractive={false} />
+        <Controls position="bottom-left" showInteractive={false} className="hidden sm:flex" />
         <MiniMap
           position="bottom-right"
           nodeColor={(node) => {
@@ -247,6 +249,7 @@ function CryptoTreeInner() {
           }}
           maskColor="rgba(10, 15, 26, 0.85)"
           style={{ backgroundColor: 'rgba(30, 41, 59, 0.9)' }}
+          className="hidden sm:block"
         />
         <ZoomControls />
 
@@ -273,6 +276,9 @@ function CryptoTreeInner() {
 
       {/* Keyboard Help */}
       <KeyboardShortcutsHelp />
+
+      {/* Mobile Controls Drawer */}
+      <MobileControlsDrawer />
     </>
   );
 }

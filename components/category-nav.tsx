@@ -1,11 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useReactFlow } from '@xyflow/react';
 import { categoryColors, categoryLabels, initialNodes, CryptoNodeData } from '@/data/crypto-data';
 import { useNavigation } from './navigation-context';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Category = CryptoNodeData['category'];
 
@@ -15,9 +14,29 @@ interface CategoryStats {
 }
 
 export function CategoryNav() {
-    const { fitView } = useReactFlow();
     const { focusNode } = useNavigation();
     const [isExpanded, setIsExpanded] = useState(true);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const media = window.matchMedia('(max-width: 639px)');
+        const handleChange = () => setIsExpanded(!media.matches);
+
+        handleChange();
+        if ('addEventListener' in media) {
+            media.addEventListener('change', handleChange);
+            return () => media.removeEventListener('change', handleChange);
+        }
+        media.addListener(handleChange);
+        return () => media.removeListener(handleChange);
+    }, []);
+
+    useEffect(() => {
+        const handleToggle = () => setIsExpanded((prev) => !prev);
+        window.addEventListener('toggle-category-nav', handleToggle);
+        return () => window.removeEventListener('toggle-category-nav', handleToggle);
+    }, []);
 
     // Calculate stats per category
     const categoryStats = initialNodes.reduce((acc, node) => {
@@ -57,16 +76,16 @@ export function CategoryNav() {
         <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="fixed left-6 top-32 z-30"
+            className="fixed left-3 sm:left-6 top-24 sm:top-32 z-30"
         >
             {/* Toggle Button */}
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center gap-2 px-4 py-2 mb-2 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-700/50 text-slate-300 hover:text-white hover:border-slate-600 transition-all shadow-lg"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 mb-2 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-700/50 text-slate-300 hover:text-white hover:border-slate-600 transition-all shadow-lg text-xs sm:text-sm"
             >
-                <span className="text-sm font-medium">Categories</span>
+                <span className="font-medium">Categories</span>
                 {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </motion.button>
 
@@ -80,7 +99,7 @@ export function CategoryNav() {
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
             >
-                <div className="space-y-1 p-2 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-700/50 shadow-xl">
+                <div className="space-y-1 p-2 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-700/50 shadow-xl w-[220px] sm:w-[240px] max-w-[calc(100vw-1.5rem)] max-h-[60vh] overflow-y-auto">
                     {categories.map((category) => {
                         const stats = categoryStats[category] || { total: 0, learned: 0 };
                         const color = categoryColors[category];

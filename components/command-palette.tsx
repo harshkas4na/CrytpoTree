@@ -42,6 +42,12 @@ export function CommandPalette({ nodes }: CommandPaletteProps) {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
+  useEffect(() => {
+    const handleOpen = () => setOpen(true);
+    window.addEventListener('open-command-palette', handleOpen);
+    return () => window.removeEventListener('open-command-palette', handleOpen);
+  }, []);
+
   const handleSelect = (nodeId: string) => {
     const node = nodes.find((n) => n.id === nodeId);
 
@@ -78,11 +84,16 @@ export function CommandPalette({ nodes }: CommandPaletteProps) {
       {/* Search Button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-6 py-3 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-600/50 text-slate-300 hover:text-white hover:border-slate-500 hover:bg-slate-800/90 transition-all shadow-xl hover:shadow-2xl group"
+        className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-600/50 text-slate-300 hover:text-white hover:border-slate-500 hover:bg-slate-800/90 transition-all shadow-xl hover:shadow-2xl group w-[92vw] sm:w-auto max-w-[560px]"
       >
         <Search size={18} className="text-slate-400 group-hover:text-blue-400 transition-colors" />
-        <span className="text-sm font-medium">Search topics, protocols, chains...</span>
-        <div className="ml-3 flex items-center gap-2 text-xs text-slate-400">
+        <span className="text-sm font-medium min-w-0 flex-1 truncate hidden sm:inline">
+          Search topics, protocols, chains...
+        </span>
+        <span className="text-sm font-medium min-w-0 flex-1 truncate sm:hidden">
+          Search crypto topics
+        </span>
+        <div className="ml-auto hidden md:flex items-center gap-2 text-xs text-slate-400">
           <kbd className="bg-slate-900/80 px-2 py-1 rounded-md border border-slate-600">/</kbd>
           <kbd className="bg-slate-900/80 px-2 py-1 rounded-md border border-slate-600">⌘K</kbd>
         </div>

@@ -90,18 +90,19 @@ export function ProgressBar({ nodes }: ProgressBarProps) {
       </div>
 
       {/* Stats bar */}
-      <div className="px-6 py-3 flex items-center justify-between bg-slate-900/90 backdrop-blur-md border-b border-slate-700/50">
-        <div className="flex items-center gap-4">
+      <div className="px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 sm:justify-between bg-slate-900/90 backdrop-blur-md border-b border-slate-700/50">
+        <div className="flex items-center gap-3 sm:gap-4">
           {/* Trophy icon for gamification */}
           <motion.div
             whileHover={{ scale: 1.1, rotate: 10 }}
-            className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-600/20 flex items-center justify-center"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-600/20 flex items-center justify-center"
           >
-            <Trophy size={16} className="text-amber-400" />
+            <Trophy size={14} className="text-amber-400 sm:hidden" />
+            <Trophy size={16} className="text-amber-400 hidden sm:block" />
           </motion.div>
 
           {/* Progress text */}
-          <div className="text-sm text-slate-300">
+          <div className="text-xs sm:text-sm text-slate-300">
             <span className="font-bold text-white">{learnedCount}</span>
             {' '}of{' '}
             <span className="font-bold text-white">{totalSkills}</span>
@@ -111,7 +112,7 @@ export function ProgressBar({ nodes }: ProgressBarProps) {
 
         {/* Percentage */}
         <motion.div
-          className="text-xl font-bold"
+          className="text-lg sm:text-xl font-bold self-end sm:self-auto"
           style={{
             background: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981)',
             WebkitBackgroundClip: 'text',
@@ -130,9 +131,9 @@ export function ProgressBar({ nodes }: ProgressBarProps) {
           opacity: showDetails ? 1 : 0,
         }}
         transition={{ duration: 0.2 }}
-        className="overflow-hidden bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50"
+        className="hidden sm:block overflow-hidden bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50"
       >
-        <div className="px-6 py-4 flex items-center gap-6">
+        <div className="px-6 py-4 flex flex-wrap items-center gap-4">
           {categories.map((cat) => {
             const stats = categoryProgress[cat] || { total: 0, learned: 0 };
             const catPercentage = stats.total > 0 ? Math.round((stats.learned / stats.total) * 100) : 0;

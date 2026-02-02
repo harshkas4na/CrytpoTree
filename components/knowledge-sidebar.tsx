@@ -108,11 +108,11 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-screen w-[460px] bg-slate-900/95 backdrop-blur-xl border-l border-slate-700/50 z-50 flex flex-col shadow-2xl"
+            className="fixed right-0 top-0 h-[100dvh] sm:h-screen w-full sm:w-[420px] md:w-[460px] max-w-[100vw] bg-slate-900/95 backdrop-blur-xl border-l border-slate-700/50 z-50 flex flex-col shadow-2xl"
           >
             {/* Header */}
             <div
-              className="p-6 border-b border-slate-700/50"
+              className="p-4 sm:p-6 border-b border-slate-700/50"
               style={{
                 background: `linear-gradient(135deg, ${color}15 0%, transparent 100%)`,
               }}
@@ -139,14 +139,14 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
                 </button>
               </div>
 
-              <motion.h2
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-2xl font-bold text-white mb-3"
-              >
-                {node.label}
-              </motion.h2>
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-xl sm:text-2xl font-bold text-white mb-3"
+                >
+                  {node.label}
+                </motion.h2>
 
               {node.shortOverview && (
                 <p className="text-sm text-slate-300 leading-relaxed">
@@ -176,12 +176,12 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-slate-700/50 px-4">
+            <div className="flex border-b border-slate-700/50 px-3 sm:px-4">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all relative ${activeTab === tab.id
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-3 text-sm font-medium transition-all relative ${activeTab === tab.id
                     ? 'text-white'
                     : 'text-slate-400 hover:text-slate-200'
                     }`}
@@ -200,7 +200,7 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               <AnimatePresence mode="wait">
                 {activeTab === 'overview' && (
                   <motion.div
@@ -463,10 +463,10 @@ export function KnowledgeSidebar({ node, onClose }: KnowledgeSidebarProps) {
             </div>
 
             {/* Action Area */}
-            <div className="p-6 border-t border-slate-700/50 space-y-3">
+            <div className="p-4 sm:p-6 border-t border-slate-700/50 space-y-3">
               <Button
                 onClick={handleMarkAsLearned}
-                className={`w-full py-5 text-sm font-semibold transition-all ${isLearned
+                className={`w-full py-4 sm:py-5 text-sm font-semibold transition-all ${isLearned
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                   : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}

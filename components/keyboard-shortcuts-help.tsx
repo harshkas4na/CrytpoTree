@@ -34,6 +34,12 @@ export function KeyboardShortcutsHelp() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
+    useEffect(() => {
+        const handleOpen = () => setIsOpen(true);
+        window.addEventListener('open-keyboard-help', handleOpen);
+        return () => window.removeEventListener('open-keyboard-help', handleOpen);
+    }, []);
+
     return (
         <>
             {/* Toggle Button */}
@@ -43,7 +49,7 @@ export function KeyboardShortcutsHelp() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 right-6 z-30 p-3 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600 transition-all shadow-lg"
+                className="hidden sm:block fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 p-2 sm:p-3 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600 transition-all shadow-lg"
                 title="Keyboard shortcuts (?)"
             >
                 <Keyboard size={20} />
@@ -68,7 +74,7 @@ export function KeyboardShortcutsHelp() {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[380px] p-6 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 shadow-2xl"
+                            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] max-w-[380px] max-h-[80vh] overflow-y-auto p-4 sm:p-6 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 shadow-2xl"
                         >
                             {/* Header */}
                             <div className="flex items-center justify-between mb-6">
@@ -94,7 +100,7 @@ export function KeyboardShortcutsHelp() {
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="flex items-center justify-between py-2"
+                                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2"
                                     >
                                         <span className="text-sm text-slate-400">{shortcut.description}</span>
                                         <div className="flex items-center gap-1">

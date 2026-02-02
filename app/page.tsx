@@ -4,7 +4,7 @@ import { CryptoTree } from '@/components/crypto-tree';
 
 export default function Home() {
   return (
-    <main className="w-full h-screen bg-[#0a0f1a] relative overflow-hidden">
+    <main className="w-full h-[100dvh] min-h-[100dvh] bg-[#0a0f1a] relative overflow-hidden">
       {/* Subtle gradient background - no heavy animations */}
       <div
         className="absolute inset-0 pointer-events-none"

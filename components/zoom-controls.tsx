@@ -28,7 +28,10 @@ export function ZoomControls() {
     {
       icon: Maximize2,
       label: 'Fit View',
-      onClick: () => fitView({ padding: 0.15, duration: 600 }),
+      onClick: () => {
+        const padding = typeof window !== 'undefined' && window.innerWidth < 640 ? 0.35 : 0.15;
+        fitView({ padding, duration: 600 });
+      },
     },
   ];
 
@@ -37,7 +40,7 @@ export function ZoomControls() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="fixed bottom-24 left-6 z-20 flex flex-col gap-1.5 p-1.5 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-700/50 shadow-xl"
+      className="hidden sm:flex fixed bottom-24 left-3 sm:left-6 z-20 flex-row sm:flex-col gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-xl bg-slate-800/90 backdrop-blur-md border border-slate-700/50 shadow-xl"
     >
       {controls.map((control, index) => (
         <motion.button
@@ -48,7 +51,7 @@ export function ZoomControls() {
           whileHover={{ scale: 1.1, backgroundColor: 'rgba(59, 130, 246, 0.2)' }}
           whileTap={{ scale: 0.95 }}
           onClick={control.onClick}
-          className="p-2.5 rounded-lg text-slate-400 hover:text-white transition-colors"
+          className="p-2 sm:p-2.5 rounded-lg text-slate-400 hover:text-white transition-colors"
           title={control.label}
         >
           <control.icon size={18} />
