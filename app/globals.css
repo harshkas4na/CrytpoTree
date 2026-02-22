@@ -126,52 +126,48 @@
 }
 
 /* ========================================
-   REACT FLOW STYLES
+   REACT FLOW — OBSIDIAN CANVAS OVERRIDES
    ======================================== */
 
+/* Remove React Flow's default white background */
+.react-flow {
+  background: #1a1a1a;
+}
+
+/* Nodes: no extra shadow from RF wrapper */
 .react-flow__node {
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  filter: none !important;
 }
 
+/* Edge paths */
 .react-flow__edge path {
-  transition: stroke-width 0.2s ease, opacity 0.2s ease;
+  transition: stroke-width 0.15s ease, opacity 0.15s ease;
 }
 
-/* ========================================
-   MINIMAP STYLES
-   ======================================== */
-
-.react-flow__minimap {
-  background: rgba(15, 23, 42, 0.9) !important;
-  border: 1px solid rgba(51, 65, 85, 0.5) !important;
-  border-radius: 12px !important;
+/* Selection box */
+.react-flow__selection {
+  background: rgba(99, 102, 241, 0.06) !important;
+  border: 1px solid rgba(99, 102, 241, 0.4) !important;
 }
 
-.react-flow__minimap-mask {
-  fill: rgba(59, 130, 246, 0.1) !important;
+/* Connection line while dragging */
+.react-flow__connection-line {
+  stroke: #6366f1 !important;
+  stroke-width: 1.5px !important;
 }
 
-/* ========================================
-   CONTROLS STYLES
-   ======================================== */
-
-.react-flow__controls {
-  background: rgba(30, 41, 59, 0.9) !important;
-  border: 1px solid rgba(51, 65, 85, 0.5) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+/* Handles — invisible by default, revealed on hover by component CSS */
+.react-flow__handle {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.react-flow__node:hover .react-flow__handle {
+  opacity: 1;
 }
 
-.react-flow__controls-button {
-  background: transparent !important;
-  border: none !important;
-  color: #94a3b8 !important;
-  transition: all 0.2s ease !important;
-}
-
-.react-flow__controls-button:hover {
-  background: rgba(59, 130, 246, 0.2) !important;
-  color: #3b82f6 !important;
+/* Panel utility */
+.react-flow__panel {
+  margin: 12px;
 }
 
 /* ========================================
@@ -357,6 +353,60 @@
   50% {
     transform: translateX(8px);
     opacity: 1;
+  }
+}
+
+/* ========================================
+   KINDLECLONE ANIMATIONS
+   ======================================== */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-soft {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.7s ease-out both;
+}
+
+.animate-rise-delay-1 {
+  animation-delay: 0.12s;
+}
+
+.animate-rise-delay-2 {
+  animation-delay: 0.24s;
+}
+
+.animate-rise-delay-3 {
+  animation-delay: 0.36s;
+}
+
+.animate-float-soft {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-rise-delay-1,
+  .animate-rise-delay-2,
+  .animate-rise-delay-3,
+  .animate-float-soft {
+    animation: none !important;
   }
 }
 

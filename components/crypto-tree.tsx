@@ -76,9 +76,9 @@ function CryptoTreeInner() {
       ranksep: 100,  // Reduced vertical spacing
     });
 
-    // Add nodes to dagre with smaller size
+    // Add nodes to dagre — match card dimensions (190px wide, ~100px tall with description)
     initialNodes.forEach((node) => {
-      dagreGraph.setNode(node.id, { width: 180, height: 80 });
+      dagreGraph.setNode(node.id, { width: 190, height: 100 });
     });
 
     // Add edges to dagre
@@ -104,25 +104,30 @@ function CryptoTreeInner() {
           hasHiddenChildren: false,
           childCount,
         },
-        position: { x: pos.x - 90, y: pos.y - 40 }, // Adjusted for smaller nodes
+        position: { x: pos.x - 95, y: pos.y - 50 },
         type: 'crypto',
       };
     });
 
-    // Convert to React Flow edges - simple styling
+    // Convert to React Flow edges — category-aware colors
+    const nodeMap = new Map(initialNodes.map((n) => [n.id, n]));
     const newEdges: Edge[] = initialNodes
       .flatMap((node) =>
-        node.dependencies.map((dep) => ({
-          id: `${dep}-${node.id}`,
-          source: dep,
-          target: node.id,
-          type: 'smoothstep',
-          style: {
-            stroke: '#3b82f6',
-            strokeWidth: 2,
-            opacity: 0.5,
-          },
-        }))
+        node.dependencies.map((dep) => {
+          const srcNode = nodeMap.get(dep);
+          const edgeColor = srcNode ? categoryColors[srcNode.category] : '#64748b';
+          return {
+            id: `${dep}-${node.id}`,
+            source: dep,
+            target: node.id,
+            type: 'smoothstep',
+            style: {
+              stroke: edgeColor,
+              strokeWidth: 1.5,
+              opacity: 0.55,
+            },
+          };
+        })
       );
 
     setNodes(newNodes);
@@ -202,17 +207,18 @@ function CryptoTreeInner() {
   });
 
   // Update edge styles based on hover state
-  const edgesWithState = filteredEdges.map((edge) => ({
-    ...edge,
-    style: {
-      ...edge.style,
-      opacity: hoveredPath.size === 0 ||
-        (hoveredPath.has(edge.source) && hoveredPath.has(edge.target))
-        ? 0.6
-        : 0.1,
-      strokeWidth: (hoveredPath.has(edge.source) && hoveredPath.has(edge.target)) ? 3 : 2,
-    },
-  }));
+  const edgesWithState = filteredEdges.map((edge) => {
+    const isOnPath = hoveredPath.has(edge.source) && hoveredPath.has(edge.target);
+    const isIdle = hoveredPath.size === 0;
+    return {
+      ...edge,
+      style: {
+        ...edge.style,
+        opacity: isIdle ? 0.55 : isOnPath ? 0.9 : 0.12,
+        strokeWidth: isOnPath ? 2.5 : 1.5,
+      },
+    };
+  });
 
   return (
     <>
