@@ -60,6 +60,7 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
     const next = !learned;
     setLearned(next);
     localStorage.setItem(storageKey, String(next));
+    window.dispatchEvent(new Event('learned-updated'));
   };
 
   const accentColor = d.accentColor ?? CATEGORY_COLORS[d.category ?? 'infra'] ?? '#6366f1';

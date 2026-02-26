@@ -5042,6 +5042,305 @@ Particle's SDK example for cross-chain execution:
 The developer promise: write chain-agnostic code, Particle handles the cross-chain complexity.
 `,
   },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COSMOS SUB-CANVAS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  'cosmos-l1': {
+    id: 'cosmos-l1',
+    title: 'Cosmos Hub',
+    content: `# Cosmos Hub
+
+## Overview
+
+The Cosmos Hub is the first and most prominent blockchain in the Cosmos ecosystem. It serves as the central coordinator of the interchain — home to ATOM, Interchain Security, and the canonical IBC implementation. Unlike application-specific chains such as Osmosis or Injective, the Hub is intentionally minimal: its value comes from being the trust anchor and economic center of the broader network.
+
+## ATOM and Staking
+
+ATOM is the native staking token of the Hub. Stakers secure the network via Proof of Stake and earn a share of transaction fees and inflation. The 21-day unbonding period is a security parameter: it ensures that any validator misbehaving can be slashed before they can exit. ATOM's inflation rate adjusts dynamically based on staking participation — if less than two-thirds of supply is staked, inflation rises to incentivize more stakers.
+
+## Tendermint BFT Consensus
+
+The Hub uses Tendermint BFT (now called CometBFT), a Byzantine Fault Tolerant consensus algorithm that provides:
+- **Instant finality** — once a block is committed, it cannot be reverted
+- **2/3+ honest validators** required for safety
+- **Fast finality** — ~6 second block times
+
+This is in contrast to probabilistic finality chains (Bitcoin, old Ethereum) where you wait for many confirmations. Tendermint's finality is what makes IBC trustless — light clients can verify finalized state immediately.
+
+## Interchain Security
+
+Interchain Security (ICS) lets "consumer chains" borrow the Cosmos Hub's validator set for security. Instead of bootstrapping 100+ independent validators, a new chain can launch secured by ATOM validators from day one. Stride (liquid staking) and Neutron (CosmWasm contracts) are consumer chains.
+
+This creates a flywheel: consumer chains pay fees to ATOM stakers, increasing ATOM's yield, attracting more stakers, strengthening the Hub's security, and making ICS more valuable for future consumer chains.
+
+## The Appchain Thesis
+
+Cosmos pioneered the idea that the best DeFi apps should be their own sovereign chains, not contracts on a shared VM. This gives them:
+- Custom fee parameters
+- Dedicated blockspace (no gas wars)
+- Direct control over validator incentives
+
+[[eth]] has adopted a version of this via rollups — but Cosmos chains maintain full sovereignty, while rollups inherit Ethereum's security model.
+`,
+  },
+
+  'cosmos-ibc': {
+    id: 'cosmos-ibc',
+    title: 'IBC Protocol',
+    content: `# IBC — Inter-Blockchain Communication
+
+## What Is IBC?
+
+IBC is the TCP/IP of blockchains. It's a trustless, permissionless protocol for passing arbitrary messages — tokens, NFT ownership, smart contract calls — between sovereign blockchains. It was designed as part of the original Cosmos vision and is now used by 100+ chains.
+
+## How It Works
+
+IBC uses **light clients**: each chain maintains a minimal, cryptographic representation of the other chain's consensus state. To transfer tokens from Chain A to Chain B:
+
+1. A relayer (permissionless off-chain actor) picks up the packet from Chain A
+2. The relayer submits the packet plus a Merkle proof to Chain B
+3. Chain B's IBC module verifies the proof against Chain A's light client
+4. Tokens arrive on Chain B — no trusted custodian, no multisig
+
+The light client tracks the other chain's validator set and verifies new headers against it. If the source chain finalizes a state transition, the receiving chain can cryptographically verify it happened.
+
+## Why IBC Is Different from Bridges
+
+Most bridges use one of two models:
+- **Multisig custodians** — a set of trusted parties hold assets (e.g., early Multichain)
+- **Optimistic bridges** — anyone can challenge fraud within a window (e.g., Hop, Across)
+
+Both introduce trust assumptions. IBC's light-client design means:
+- No locked collateral
+- No trusted validators beyond the connected chains themselves
+- No need for a separate token to secure the bridge
+
+The only trust assumption is in the chains themselves — if both chains have honest 2/3+ validators, IBC is secure.
+
+## Relayers
+
+Relayers are off-chain processes that monitor IBC channels and ferry packets between chains. They're permissionless — anyone can run one. Relayer economics are funded by the applications using IBC (e.g., DEXes pay relayers to keep channels alive). There's no staking or slashing for relayers; they simply can't produce invalid proofs since Chain B verifies everything.
+
+## IBC Beyond Tokens
+
+IBC supports arbitrary data — not just token transfers. Applications include:
+- **Interchain Accounts** — control a wallet on Chain B from Chain A
+- **Interchain Queries** — read state from another chain
+- **NFT transfers** — ICS-721 standard
+
+This extensibility is why IBC is compared to TCP/IP: it's a transport layer, and the application protocols sit on top.
+
+## Connection to [[cosmos-l1]]
+
+[[cosmos-l1]] is the canonical home of IBC and the most IBC-connected chain. Most new IBC channels open a connection through the Hub before extending to other chains.
+`,
+  },
+
+  'cosmos-sdk': {
+    id: 'cosmos-sdk',
+    title: 'Cosmos SDK',
+    content: `# Cosmos SDK
+
+## What Is the Cosmos SDK?
+
+The Cosmos SDK is an open-source framework for building application-specific blockchains. It packages the most common blockchain primitives — token transfers, staking, governance, slashing — into modular, composable components. Teams building on the SDK start with these battle-tested modules and layer in their application logic.
+
+## Why Build an Appchain?
+
+Shared VMs (Ethereum, Solana) force all applications to compete for the same blockspace and operate under the same rules. An appchain lets you:
+- Set your own fee market (or make txns free)
+- Customize validator incentives
+- Upgrade logic without waiting for a network-wide hard fork
+- Issue your own token as a first-class protocol asset
+
+dYdX, the largest perp DEX by volume, migrated from Ethereum to a Cosmos SDK chain to run a CLOB — impossible on Ethereum's throughput.
+
+## Module System
+
+The SDK uses a module architecture. Each module handles a slice of state and exposes messages, queries, and events. Key built-in modules:
+
+- **bank** — token minting, transfers, multi-send
+- **staking** — delegated PoS, validator set management
+- **governance** — on-chain proposals and voting
+- **slashing** — penalize validators for misbehavior
+- **IBC** — [[cosmos-ibc]] integration built in
+
+Teams add custom modules for their application logic (e.g., a DEX module, a derivatives module).
+
+## CosmWasm
+
+CosmWasm is a WebAssembly (Wasm) smart contract layer for Cosmos SDK chains. Teams that don't want to write a full module can deploy contracts written in Rust. CosmWasm contracts are sandboxed, upgradeable, and IBC-aware.
+
+This means a Cosmos SDK chain can support both native modules (for performance-critical code) and smart contracts (for rapid iteration and developer accessibility).
+
+## Notable SDK Chains
+
+- **[[cosmos-osmosis]]** — IBC DEX hub, custom TWAP oracle
+- **[[cosmos-injective]]** — on-chain order book, perps and spot
+- **[[cosmos-celestia]]** — modular data availability
+- **dYdX** — migrated from Ethereum for CLOB at scale
+- **Sei** — parallelized EVM targeting DeFi
+
+## Ignite CLI
+
+Ignite CLI (formerly Starport) is the scaffolding tool for Cosmos SDK chains — similar to "create-react-app" but for blockchains. It generates boilerplate for modules, messages, and types, letting teams go from zero to running testnet in hours.
+`,
+  },
+
+  'cosmos-osmosis': {
+    id: 'cosmos-osmosis',
+    title: 'Osmosis',
+    content: `# Osmosis — The IBC DEX Hub
+
+## Overview
+
+Osmosis is the primary decentralized exchange of the Cosmos ecosystem — an AMM built as its own sovereign Cosmos SDK appchain. Rather than a DEX deployed as a contract on another chain, Osmosis controls its own blockspace, fee parameters, and protocol upgrades through OSMO governance.
+
+## How Osmosis Works
+
+Osmosis uses a standard AMM with concentrated liquidity (CLMM) pools. Traders swap IBC assets (ATOM, OSMO, TIA, INJ, stATOM, etc.) directly on-chain. Since Osmosis is IBC-connected to 50+ chains, assets flow in and out trustlessly.
+
+Key mechanics:
+- **OSMO** — governance token, earns a share of swap fees and inflation
+- **LP tokens** — represent shares of a liquidity pool
+- **Superfluid staking** — LP tokens can be staked simultaneously (earn swap fees + staking rewards)
+- **TWAP oracle** — Osmosis's time-weighted average price is used by other protocols as a price feed
+
+## Superfluid Staking
+
+This is Osmosis's most innovative feature: OSMO LPs can simultaneously stake their liquidity position to help secure the Osmosis chain. This creates a capital efficiency triple-stack:
+1. **Swap fees** from the LP position
+2. **Liquidity mining rewards** from OSMO emissions
+3. **Staking rewards** from Osmosis validator delegation
+
+No other major DEX has combined all three incentive streams into a single position.
+
+## Role in the IBC Ecosystem
+
+Osmosis is the most IBC-connected chain — nearly every new Cosmos chain creates its first liquidity pool on Osmosis. It functions as a cross-chain clearing house: if you want to swap Token A from Chain X for Token B on Chain Y, the path often goes through Osmosis.
+
+Volume is driven by [[cosmos-ibc]] flows from [[cosmos-l1]] and the broader appchain ecosystem.
+`,
+  },
+
+  'cosmos-celestia': {
+    id: 'cosmos-celestia',
+    title: 'Celestia',
+    content: `# Celestia — Modular Data Availability
+
+## What Is Celestia?
+
+Celestia is the first modular blockchain designed solely for data availability (DA). It doesn't execute transactions or settle state — it just ensures data is published and available for anyone who needs to verify it. This separation of concerns is the "modular blockchain" thesis in practice.
+
+## The Modular Stack
+
+Traditional blockchains (monolithic) do everything in one layer:
+- **Consensus** — agree on ordering
+- **Execution** — run transactions
+- **Data availability** — publish data
+- **Settlement** — finalize state
+
+Celestia handles only consensus + DA. Rollups and appchains post their transaction data to Celestia as "blobs", while running their own execution and settling wherever they choose (Ethereum, another chain, or standalone).
+
+## Data Availability Sampling (DAS)
+
+The key innovation: Celestia uses DAS so that light nodes can verify data availability without downloading all the data. Each block's data is encoded with erasure codes — meaning 50% of the data is sufficient to reconstruct the full block. Light nodes sample random chunks and probabilistically verify that the full data is available.
+
+This means Celestia can have very large blocks (cheap DA fees) while still supporting lightweight verification — a fundamental scalability breakthrough.
+
+## TIA Token
+
+TIA is used to pay for blob fees on Celestia. It is also used for staking (securing Celestia's consensus) and governance. Rollup teams "airdrop" new chains by distributing to TIA stakers — Celestia's stakers have become the de-facto early-adopter community for the modular ecosystem.
+
+## Relation to [[cosmos-sdk]]
+
+Celestia is built with the Cosmos SDK and connects to the IBC ecosystem. While its primary value is as a DA layer for rollups (including Ethereum rollups via celestia-node), it's a native IBC chain and part of the broader Cosmos interchain.
+
+## Influence on Ethereum
+
+Ethereum's EIP-4844 (blobspace) was directly influenced by Celestia's research on separating DA from execution. The Danksharding roadmap extends this further. Celestia's core team published the foundational research that shaped both Ethereum's and Cosmos's scaling roadmaps.
+`,
+  },
+
+  'cosmos-injective': {
+    id: 'cosmos-injective',
+    title: 'Injective',
+    content: `# Injective — On-Chain Order Book
+
+## Overview
+
+Injective is a high-performance blockchain purpose-built for on-chain derivatives and financial markets. It runs a fully on-chain Central Limit Order Book (CLOB) — something impossible on Ethereum due to throughput constraints — at 10,000+ TPS with instant finality.
+
+## Why a CLOB Instead of AMM?
+
+AMMs (like Uniswap) work for most retail trading but have limitations:
+- **Impermanent loss** for LPs
+- **No limit orders** — only market orders against a curve
+- **Worse price discovery** than an order book
+
+Professional market makers and institutional traders prefer CLOBs: you can set limit orders, post buy/sell walls, and implement sophisticated strategies. The problem: a CLOB requires constant order updates (cancel, re-post), which costs gas on Ethereum.
+
+Injective's dedicated blockspace makes frequent order updates cheap, enabling a true exchange experience on-chain.
+
+## EVM + CosmWasm
+
+Injective is dual-compatible:
+- **EVM compatibility** — Solidity developers can deploy Ethereum contracts
+- **CosmWasm** — Rust developers can deploy Cosmos-style contracts
+
+This makes Injective accessible to both the Ethereum and Cosmos developer ecosystems, maximizing the surface area for integrations and protocol deployments.
+
+## INJ Token and Burn Mechanism
+
+INJ is used for staking (securing consensus), governance, and collateral. The deflationary mechanism: 60% of all exchange fees are used to buy back and burn INJ in weekly on-chain auctions. Anyone can bid on the auction; the winning bid (in INJ) is burned, and the bidder receives the week's accumulated fees.
+
+This creates a direct link between Injective's trading volume and INJ scarcity.
+
+## Ecosystem
+
+Injective hosts a growing set of financial protocols: perpetuals exchanges, prediction markets, RWA tokenization, and cross-chain DeFi. Its connection to [[cosmos-ibc]] means assets can flow in from any IBC chain, and its EVM compatibility attracts protocols from [[eth]] as well.
+`,
+  },
+
+  'cosmos-stride': {
+    id: 'cosmos-stride',
+    title: 'Stride',
+    content: `# Stride — Liquid Staking for IBC
+
+## Overview
+
+Stride is a liquid staking protocol built as a Cosmos SDK appchain and secured by the Cosmos Hub via Interchain Security. It issues liquid staking tokens (stTokens) for IBC-native assets — stATOM, stOSMO, stINJ, stTIA — letting stakers earn staking yield while keeping their capital liquid and usable across IBC DeFi.
+
+## The Liquid Staking Problem
+
+Staking ATOM on the Cosmos Hub earns yield (~15% APR historically) but requires a 21-day unbonding period. During that time, your ATOM is illiquid — you can't trade it, use it as collateral, or provide liquidity. This creates a tradeoff: security (staking) vs. capital efficiency (DeFi).
+
+Liquid staking resolves this tradeoff.
+
+## How stTokens Work
+
+When you deposit ATOM to Stride:
+1. Stride stakes your ATOM with a diversified set of Cosmos Hub validators via Interchain Accounts ([[cosmos-ibc]])
+2. You receive stATOM, representing your staked ATOM + accruing rewards
+3. stATOM's price appreciates over time relative to ATOM as staking rewards accumulate
+4. You can use stATOM in DeFi: LP on [[cosmos-osmosis]], collateral on lending protocols, etc.
+5. When you redeem, stATOM is burned and you receive ATOM after the 21-day unbonding
+
+## Interchain Security
+
+Stride is a consumer chain — it doesn't run its own validator set. Instead, Cosmos Hub validators (ATOM stakers) also validate Stride transactions. This means:
+- Stride inherits the Hub's security from day one
+- No need to incentivize an independent validator set
+- ATOM stakers earn additional yield from Stride's fees
+
+This is the Interchain Security model in action: consumer chains pay a fee to the Hub, aligning incentives across the entire Cosmos ecosystem.
+
+## Relation to [[cosmos-l1]]
+
+Stride's security is directly derived from [[cosmos-l1]] via ICS. Stride's growth (more staked assets = more fees to ATOM stakers) is a direct positive for the Hub, creating a flywheel between Cosmos DeFi adoption and ATOM's security budget.
+`,
+  },
 };
 
 // ─── Backlinks Map ──────────────────────────────────────────────────────────

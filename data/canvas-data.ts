@@ -241,15 +241,17 @@ const mainNodes: Node<CanvasNodeData>[] = [
   // ── Row 2: L2s, EVM L1s, alt-L1s ─────────────────────────────────────────
   {
     id: 'cosmos',
-    type: 'card',
+    type: 'page',
     position: { x: -1100, y: 520 },
     data: {
-      type: 'card',
+      type: 'page',
       groupLabel: 'Interoperability',
       title: 'Cosmos / IBC',
-      subtitle: 'Internet of Blockchains',
-      content: 'Modular blockchain SDK + IBC protocol for trustless cross-chain communication between 100+ sovereign chains.',
-      items: ['Tendermint BFT consensus', 'ATOM, OSMO, INJ, TIA, STRIDE…', 'Influenced Ethereum appchain roadmap'],
+      description: 'Modular blockchain SDK + IBC protocol. The Internet of Blockchains — 100+ sovereign appchains connected trustlessly.',
+      canvasId: 'cosmos',
+      emoji: '⚛️',
+      accentColor: '#6f4cff',
+      tokenSymbol: 'ATOM',
       category: 'bridge',
       shortOverview: `A modular blockchain SDK and IBC cross-chain messaging protocol connecting 100+ sovereign appchains.`,
       deepInsight: `Cosmos pioneered the "appchain" thesis: rather than one monolithic chain, build many specialized chains connected by IBC (Inter-Blockchain Communication). The Cosmos SDK lets teams launch app-specific blockchains in weeks. Notable IBC chains include Osmosis (DEX hub), Injective (perps), Celestia (data availability), and Stride (liquid staking). This philosophy directly influenced Ethereum's rollup-centric roadmap — rollups are essentially Ethereum's version of Cosmos appchains.`,
@@ -2833,6 +2835,167 @@ const walletsEdges: Edge[] = [
   { id: 'wl-prv-aa', source: 'wallets-privy',   target: 'wallets-erc4337', ...E },
 ];
 
+// ─── COSMOS CANVAS ────────────────────────────────────────────────────────────
+
+const cosmosNodes: Node<CanvasNodeData>[] = [
+  {
+    id: 'cosmos-l1',
+    type: 'card',
+    position: { x: 0, y: 0 },
+    data: {
+      type: 'card',
+      title: 'Cosmos Hub',
+      subtitle: 'ATOM — Internet of Blockchains',
+      content: 'The central hub of the Cosmos network. ATOM secures the Hub and enables Interchain Security for connected chains.',
+      items: ['Tendermint BFT consensus', 'Interchain Security (shared validators)', 'ATOM staking & governance'],
+      accentColor: '#6f4cff',
+      category: 'l1',
+      shortOverview: `The Cosmos Hub is the central coordinator of the Cosmos ecosystem — home to ATOM, Interchain Security, and the original IBC implementation.`,
+      deepInsight: `The Cosmos Hub was the first chain launched on Cosmos, serving as the economic center of the ecosystem. ATOM stakers secure the Hub and vote on governance proposals that shape the entire Cosmos roadmap. Interchain Security (ICS) lets smaller "consumer chains" borrow the Hub's validator set for security — similar to Ethereum's shared security via rollups, but sovereign. The Hub itself is intentionally minimal: its value comes from being the trust anchor for the broader interchain, not from hosting applications directly.`,
+      resources: [
+        { label: 'cosmos.network — Official site', url: 'https://cosmos.network' },
+        { label: 'Cosmos Hub docs', url: 'https://hub.cosmos.network' },
+        { label: 'ATOM tokenomics', url: 'https://cosmos.network/atom' },
+      ],
+    },
+    style: { width: 320 },
+  },
+  {
+    id: 'cosmos-ibc',
+    type: 'card',
+    position: { x: -500, y: 440 },
+    data: {
+      type: 'card',
+      groupLabel: 'Core Protocol',
+      title: 'IBC Protocol',
+      content: 'Inter-Blockchain Communication — trustless messaging between 100+ sovereign chains without bridges.',
+      items: ['Trustless cross-chain token transfers', 'Arbitrary data packets (NFTs, calls)', 'Light-client based verification'],
+      category: 'bridge',
+      shortOverview: `IBC is the TCP/IP of blockchains — a trustless, permissionless protocol for transferring tokens and data between sovereign chains.`,
+      deepInsight: `IBC (Inter-Blockchain Communication) works by having each chain maintain a light client of its counterpart — a minimal representation of the other chain's consensus state. When chain A sends a message to chain B, relayers (permissionless off-chain actors) carry the packet. Chain B's light client verifies the message against chain A's headers — no trusted bridge or multisig required. This is fundamentally different from most bridges: there's no wrapped token, no centralized custodian, and no validator set to bribe. IBC is now used by 100+ chains, processing billions in volume annually.`,
+      resources: [
+        { label: 'IBC Protocol docs', url: 'https://ibc.cosmos.network' },
+        { label: 'IBC specification', url: 'https://github.com/cosmos/ibc' },
+        { label: 'Map of Zones — IBC explorer', url: 'https://mapofzones.com' },
+      ],
+    },
+    style: { width: 280 },
+  },
+  {
+    id: 'cosmos-sdk',
+    type: 'card',
+    position: { x: -120, y: 440 },
+    data: {
+      type: 'card',
+      groupLabel: 'Core Protocol',
+      title: 'Cosmos SDK',
+      content: 'Modular framework for building application-specific blockchains. Powers dYdX, Injective, Celestia, and 50+ chains.',
+      items: ['Modular module system', 'Built-in staking, governance, bank', 'CosmWasm smart contracts'],
+      category: 'infra',
+      shortOverview: `The Cosmos SDK is a modular framework that lets teams build custom L1 blockchains in weeks — powering dYdX, Injective, Celestia, and dozens more.`,
+      deepInsight: `The Cosmos SDK packages common blockchain functionality into composable modules: bank (token transfers), staking (PoS), governance (on-chain voting), slashing, and more. Teams building on the SDK inherit these battle-tested modules and focus on their application-specific logic. CosmWasm adds a WebAssembly smart contract layer for teams that want programmability without a full EVM. The SDK's architecture is what makes the "appchain" thesis work: you get a sovereign, customizable blockchain with the security and composability of a shared framework.`,
+      resources: [
+        { label: 'Cosmos SDK docs', url: 'https://docs.cosmos.network' },
+        { label: 'CosmWasm docs', url: 'https://docs.cosmwasm.com' },
+        { label: 'Ignite CLI (scaffold SDK chains)', url: 'https://ignite.com' },
+      ],
+    },
+    style: { width: 280 },
+  },
+  {
+    id: 'cosmos-stride',
+    type: 'card',
+    position: { x: 300, y: 440 },
+    data: {
+      type: 'card',
+      groupLabel: 'Liquid Staking',
+      title: 'Stride',
+      content: 'Liquid staking protocol for the IBC ecosystem. Stake ATOM, OSMO, INJ and receive liquid stTokens.',
+      items: ['stATOM, stOSMO, stINJ…', 'IBC-native liquid staking', 'Auto-compounding rewards'],
+      category: 'staking',
+      shortOverview: `Stride issues liquid staking tokens for IBC assets — stATOM, stOSMO, stINJ — unlocking staked capital for DeFi use.`,
+      deepInsight: `Before Stride, staking ATOM meant locking it up for 21 days with no liquidity. Stride issues liquid staking tokens (e.g., stATOM) that represent staked ATOM plus accruing rewards. These stTokens can be used across IBC DeFi — as collateral on Umee, as LP tokens on Osmosis, etc. — while still earning staking yield. Stride is a consumer chain secured by the Cosmos Hub via Interchain Security, meaning ATOM validators also validate Stride. This aligns incentives: if Stride is valuable, it increases demand for ATOM staking (and thus the Hub's security budget).`,
+      resources: [
+        { label: 'stride.zone — Official site', url: 'https://stride.zone' },
+        { label: 'Stride docs', url: 'https://docs.stride.zone' },
+      ],
+    },
+    style: { width: 260 },
+  },
+  {
+    id: 'cosmos-osmosis',
+    type: 'card',
+    position: { x: -560, y: 880 },
+    data: {
+      type: 'card',
+      groupLabel: 'DeFi Hub',
+      title: 'Osmosis',
+      content: 'The IBC DEX hub. Cross-chain AMM for IBC tokens — the most-used DeFi application in the Cosmos ecosystem.',
+      items: ['IBC-native AMM & CLMM', 'OSMO governance token', 'Superfluid staking (LP + stake simultaneously)'],
+      category: 'dex',
+      shortOverview: `Osmosis is the primary DEX of the IBC ecosystem — an AMM that enables trustless swaps between any IBC-connected token.`,
+      deepInsight: `Osmosis pioneered the concept of "sovereignty" in DeFi: rather than a DEX deployed on another chain, Osmosis is its own chain, with its own governance deciding fee parameters, new pool types, and tokenomics. Superfluid staking lets OSMO LPs simultaneously stake their position — you earn swap fees, LP incentives, and staking rewards at once. Osmosis has consistently been the highest-volume IBC chain, processing most of the cross-chain DEX volume in the Cosmos ecosystem.`,
+      resources: [
+        { label: 'osmosis.zone — Official site', url: 'https://osmosis.zone' },
+        { label: 'Osmosis docs', url: 'https://docs.osmosis.zone' },
+        { label: 'Osmosis governance', url: 'https://gov.osmosis.zone' },
+      ],
+    },
+    style: { width: 280 },
+  },
+  {
+    id: 'cosmos-celestia',
+    type: 'card',
+    position: { x: -140, y: 880 },
+    data: {
+      type: 'card',
+      groupLabel: 'Modular Infra',
+      title: 'Celestia',
+      content: 'Modular data availability layer. Rollups and appchains post data to Celestia instead of Ethereum for lower cost.',
+      items: ['Data availability sampling (DAS)', 'TIA token for blob fees', 'Rollups post data cheaply'],
+      category: 'infra',
+      shortOverview: `Celestia pioneered modular blockchain design — a dedicated data availability layer that lets rollups post data without running a full execution environment.`,
+      deepInsight: `The key insight of Celestia is that data availability (making sure data is published and retrievable) is separable from execution (running transactions) and consensus (ordering blocks). By building a chain solely for DA using data availability sampling, Celestia lets light nodes verify that data was published without downloading all of it. This makes it cheap for rollups and appchains to post their data to Celestia rather than Ethereum — at a fraction of the cost. Ethereum's EIP-4844 blobspace was partly inspired by Celestia's research.`,
+      resources: [
+        { label: 'celestia.org — Official site', url: 'https://celestia.org' },
+        { label: 'Celestia docs', url: 'https://docs.celestia.org' },
+        { label: 'Celestia research blog', url: 'https://blog.celestia.org' },
+      ],
+    },
+    style: { width: 280 },
+  },
+  {
+    id: 'cosmos-injective',
+    type: 'card',
+    position: { x: 220, y: 880 },
+    data: {
+      type: 'card',
+      groupLabel: 'DeFi',
+      title: 'Injective',
+      content: 'Permissionless on-chain order book for perps, futures, and spot. EVM + CosmWasm compatible.',
+      items: ['Fully on-chain order book', 'INJ token (deflationary burn)', 'EVM + CosmWasm compatibility'],
+      category: 'derivatives',
+      shortOverview: `Injective is a high-performance appchain built for on-chain derivatives — a fully on-chain order book for perps, futures, and spot markets.`,
+      deepInsight: `Most DeFi uses AMMs (automated market makers) because on-chain order books were too slow and expensive on Ethereum. Injective's dedicated appchain removes those constraints — Injective runs at 10,000+ TPS with instant finality, making a CLOB (Central Limit Order Book) viable. This gives pro traders the UX of a CEX with the custody of a DEX. Injective is EVM-compatible (Ethereum devs can deploy Solidity contracts) and CosmWasm-compatible (Cosmos devs can deploy Rust contracts). The INJ token has weekly auctions where protocol revenue is used to buy back and burn INJ.`,
+      resources: [
+        { label: 'injective.com — Official site', url: 'https://injective.com' },
+        { label: 'Injective docs', url: 'https://docs.injective.network' },
+      ],
+    },
+    style: { width: 280 },
+  },
+];
+
+const cosmosEdges: Edge[] = [
+  { id: 'co-ibc',  source: 'cosmos-l1',  target: 'cosmos-ibc',      ...E },
+  { id: 'co-sdk',  source: 'cosmos-l1',  target: 'cosmos-sdk',      ...E },
+  { id: 'co-str',  source: 'cosmos-l1',  target: 'cosmos-stride',   ...E },
+  { id: 'co-osm',  source: 'cosmos-ibc', target: 'cosmos-osmosis',  ...E },
+  { id: 'co-sdk-osm', source: 'cosmos-sdk', target: 'cosmos-osmosis', ...E },
+  { id: 'co-inj',  source: 'cosmos-sdk', target: 'cosmos-injective', ...E },
+  { id: 'co-cel',  source: 'cosmos-sdk', target: 'cosmos-celestia', ...E },
+];
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const CANVASES: Record<string, CanvasDefinition> = {
@@ -2843,6 +3006,7 @@ export const CANVASES: Record<string, CanvasDefinition> = {
   monad:   { id: 'monad',   title: 'Monad',                  parentCanvasId: 'main', nodes: monadNodes,   edges: monadEdges   },
   base:    { id: 'base',    title: 'Base Ecosystem',         parentCanvasId: 'main', nodes: baseNodes,    edges: baseEdges    },
   ton:     { id: 'ton',     title: 'TON Ecosystem',          parentCanvasId: 'main', nodes: tonNodes,     edges: tonEdges     },
+  cosmos:  { id: 'cosmos',  title: 'Cosmos Ecosystem',       parentCanvasId: 'main', nodes: cosmosNodes,  edges: cosmosEdges  },
   polygon: { id: 'polygon', title: 'Polygon Ecosystem',      parentCanvasId: 'main', nodes: polygonNodes, edges: polygonEdges },
   avax:    { id: 'avax',    title: 'Avalanche Ecosystem',    parentCanvasId: 'main', nodes: avaxNodes,    edges: avaxEdges    },
   sui:     { id: 'sui',     title: 'Sui & Aptos',            parentCanvasId: 'main', nodes: suiNodes,     edges: suiEdges     },

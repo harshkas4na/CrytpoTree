@@ -27,7 +27,7 @@ import { AnimatePresence } from 'framer-motion';
 import {
   ZoomIn, ZoomOut, Maximize2, ChevronLeft, StickyNote,
   Lock, Unlock, RotateCcw, Search,
-  Pencil, Copy, Trash2, Info, ArrowUpRight,
+  Pencil, Copy, Trash2, Info, ArrowUpRight, HelpCircle, X,
 } from 'lucide-react';
 
 import { CanvasCard } from '@/components/canvas-card';
@@ -59,6 +59,54 @@ const defaultEdgeOptions = {
   },
 };
 
+// ─── Learned progress hook ────────────────────────────────────────────────────
+
+function useLearnedProgress() {
+  const total = useMemo(() => {
+    const ids = new Set<string>();
+    for (const canvas of Object.values(CANVASES)) {
+      for (const node of canvas.nodes) {
+        if (node.type === 'page') ids.add(node.id as string);
+      }
+    }
+    return ids.size;
+  }, []);
+
+  const [learned, setLearned] = useState(0);
+
+  const recount = useCallback(() => {
+    let count = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('cryptotree-learned-') && localStorage.getItem(key) === 'true') count++;
+    }
+    setLearned(count);
+  }, []);
+
+  useEffect(() => {
+    recount();
+    window.addEventListener('learned-updated', recount);
+    return () => window.removeEventListener('learned-updated', recount);
+  }, [recount]);
+
+  return { learned, total };
+}
+
+// ─── Keyboard shortcuts reference ─────────────────────────────────────────────
+
+const KEYBOARD_SHORTCUTS = [
+  { keys: ['⌘K'], description: 'Search all nodes' },
+  { keys: ['F'], description: 'Fit all nodes in view' },
+  { keys: ['⌘Z'], description: 'Undo' },
+  { keys: ['⌘⇧Z'], description: 'Redo' },
+  { keys: ['Esc'], description: 'Close panel / go back' },
+  { keys: ['Del'], description: 'Delete selected node' },
+  { keys: ['Double-click'], description: 'Edit a card' },
+  { keys: ['Enter'], description: 'Save card edit' },
+  { keys: ['Esc'], description: 'Cancel card edit' },
+  { keys: ['?'], description: 'Toggle this help' },
+];
+
 // ─── Controls (rendered inside ReactFlow so useReactFlow() works) ─────────────
 
 function CanvasControls({
@@ -68,6 +116,7 @@ function CanvasControls({
   onAddCard,
   onReset,
   onOpenSearch,
+  onOpenHelp,
   isLocked,
   onToggleLock,
 }: {
@@ -77,10 +126,12 @@ function CanvasControls({
   onAddCard: (node: Node<CanvasNodeData>) => void;
   onReset: () => void;
   onOpenSearch: () => void;
+  onOpenHelp: () => void;
   isLocked: boolean;
   onToggleLock: () => void;
 }) {
   const { zoomIn, zoomOut, fitView, screenToFlowPosition } = useReactFlow();
+  const { learned, total } = useLearnedProgress();
 
   const addCard = useCallback(() => {
     const position = screenToFlowPosition({
@@ -123,12 +174,19 @@ function CanvasControls({
         </Panel>
       )}
 
-      {/* ── Canvas title (root only) ── */}
+      {/* ── Canvas title + progress (root only) ── */}
       {canvasStack.length === 1 && (
         <Panel position="top-left">
-          <span className="text-[11px] text-[#444] font-medium tracking-wide select-none">
-            {canvasTitle}
-          </span>
+          <div className="flex items-center gap-2 select-none">
+            <span className="text-[11px] text-[#444] font-medium tracking-wide">
+              {canvasTitle}
+            </span>
+            {total > 0 && (
+              <span className="text-[10px] text-[#3a3a3a] font-medium bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2 py-0.5">
+                {learned}/{total} learned
+              </span>
+            )}
+          </div>
         </Panel>
       )}
 
@@ -218,6 +276,15 @@ function CanvasControls({
 
           <div className="w-px h-4 bg-[#2e2e2e] mx-1" />
 
+          {/* Help */}
+          <button
+            onClick={onOpenHelp}
+            className="w-7 h-7 flex items-center justify-center text-[#666] hover:text-[#ddd] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+            title="Keyboard shortcuts (?)"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+          </button>
+
           {/* Reset canvas */}
           <button
             onClick={onReset}
@@ -259,6 +326,7 @@ function CanvasView({
   onJumpTo,
   onNodeSelect,
   onOpenSearch,
+  onOpenHelp,
   focusNodeId,
 }: {
   canvasId: string;
@@ -267,6 +335,7 @@ function CanvasView({
   onJumpTo: (idx: number) => void;
   onNodeSelect: (id: string, data: CanvasNodeData) => void;
   onOpenSearch: () => void;
+  onOpenHelp: () => void;
   focusNodeId: string | null;
 }) {
   // ── Core state ──────────────────────────────────────────────────────────────
@@ -283,7 +352,7 @@ function CanvasView({
 
   // ReactFlow instance ref — gives us screenToFlowPosition / fitView outside
   // the ReactFlow provider context (e.g. in pane context menu handlers).
-  const rfRef = useRef<ReactFlowInstance | null>(null);
+  const rfRef = useRef<ReactFlowInstance<Node<CanvasNodeData>, Edge> | null>(null);
 
   // Canvas nav context — used for "Explore Ecosystem" in page-node context menu.
   const { navigateTo } = useCanvasNav();
@@ -335,6 +404,8 @@ function CanvasView({
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
         e.preventDefault();
         redo();
+      } else if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey) {
+        rfRef.current?.fitView({ duration: 500, padding: 0.12 });
       }
     };
     window.addEventListener('keydown', handler);
@@ -492,7 +563,7 @@ function CanvasView({
               type: 'item',
               label: 'Duplicate',
               icon: <Copy />,
-              onClick: () => duplicateNode(node),
+              onClick: () => duplicateNode(node as Node<CanvasNodeData>),
             },
             { type: 'separator' },
             {
@@ -523,7 +594,7 @@ function CanvasView({
               type: 'item',
               label: 'Duplicate',
               icon: <Copy />,
-              onClick: () => duplicateNode(node),
+              onClick: () => duplicateNode(node as Node<CanvasNodeData>),
             },
             {
               type: 'item',
@@ -683,6 +754,7 @@ function CanvasView({
           onAddCard={handleAddCard}
           onReset={handleResetCanvas}
           onOpenSearch={onOpenSearch}
+          onOpenHelp={onOpenHelp}
           isLocked={isLocked}
           onToggleLock={() => setIsLocked((l) => !l)}
         />
@@ -710,6 +782,7 @@ export function ObsidianCanvas() {
   const [selectedNode, setSelectedNode] = useState<{ id: string; data: CanvasNodeData } | null>(null);
   const [activeArticle, setActiveArticle] = useState<{ nodeId: string; data: CanvasNodeData } | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen]     = useState(false);
   const [focusNodeId, setFocusNodeId]   = useState<string | null>(null);
   const currentCanvasId = canvasStack[canvasStack.length - 1];
 
@@ -745,23 +818,30 @@ export function ObsidianCanvas() {
     [currentCanvasId],
   );
 
-  // Cmd/Ctrl + K → open search
+  // Cmd/Ctrl + K → open search, ? → toggle help
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      const el = document.activeElement;
+      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) return;
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen((o) => !o);
+      } else if (e.key === '?') {
+        e.preventDefault();
+        setIsHelpOpen((o) => !o);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  // Esc: close article first, then detail panel, then go back
+  // Esc: close modal chain from outermost to innermost
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (isSearchOpen) {
+      if (isHelpOpen) {
+        setIsHelpOpen(false);
+      } else if (isSearchOpen) {
         setIsSearchOpen(false);
       } else if (activeArticle) {
         setActiveArticle(null);
@@ -773,7 +853,7 @@ export function ObsidianCanvas() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [isSearchOpen, activeArticle, selectedNode, goBack]);
+  }, [isHelpOpen, isSearchOpen, activeArticle, selectedNode, goBack]);
 
   const navCtx = useMemo(
     () => ({ navigateTo, goBack, jumpTo, canvasStack }),
@@ -795,6 +875,7 @@ export function ObsidianCanvas() {
           onJumpTo={jumpTo}
           onNodeSelect={(id, data) => setSelectedNode({ id, data })}
           onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenHelp={() => setIsHelpOpen(true)}
           focusNodeId={focusNodeId}
         />
 
@@ -842,6 +923,57 @@ export function ObsidianCanvas() {
             onClose={() => setIsSearchOpen(false)}
             onSelect={handleSearchSelect}
           />
+        )}
+
+        {/* Keyboard shortcuts help modal */}
+        {isHelpOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px]"
+            onMouseDown={() => setIsHelpOpen(false)}
+          >
+            <div
+              className="w-full max-w-[400px] mx-4 bg-[#1c1c1c] border border-[#2e2e2e] rounded-2xl shadow-[0_28px_80px_rgba(0,0,0,0.85)] overflow-hidden"
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[#272727]">
+                <span className="text-[13px] font-semibold text-[#d0d0d0]">Keyboard Shortcuts</span>
+                <button
+                  onClick={() => setIsHelpOpen(false)}
+                  className="text-[#555] hover:text-[#ccc] transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Shortcuts list */}
+              <div className="px-2 py-2">
+                {KEYBOARD_SHORTCUTS.map((s, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#222] transition-colors"
+                  >
+                    <span className="text-[12px] text-[#888]">{s.description}</span>
+                    <div className="flex items-center gap-1">
+                      {s.keys.map((k, ki) => (
+                        <kbd
+                          key={ki}
+                          className="text-[10px] text-[#aaa] bg-[#252525] border border-[#333] rounded px-1.5 py-0.5 font-mono"
+                        >
+                          {k}
+                        </kbd>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Footer */}
+              <div className="px-5 py-3 border-t border-[#222] text-center text-[10px] text-[#3a3a3a] select-none">
+                Press <kbd className="text-[#555] font-mono">?</kbd> anytime to toggle
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </CanvasNavContext.Provider>

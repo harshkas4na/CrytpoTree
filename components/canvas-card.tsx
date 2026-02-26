@@ -4,6 +4,12 @@ import { useState, useCallback, useEffect } from 'react';
 import { Handle, Position, NodeResizer, useReactFlow, type NodeProps } from '@xyflow/react';
 import type { CardData } from '@/data/canvas-data';
 
+const ACCENT_COLORS = [
+  '#6366f1', '#8b5cf6', '#ec4899', '#ef4444',
+  '#f97316', '#f59e0b', '#10b981', '#3b82f6',
+  '#06b6d4', '#84cc16',
+];
+
 export function CanvasCard({ id, data, selected }: NodeProps) {
   const d = data as unknown as CardData;
   const [isEditing, setIsEditing] = useState(false);
@@ -102,6 +108,28 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
                 className="w-full bg-[#2a2a2a] border border-[#555] rounded px-2 py-1 text-[#a0a0a0] text-[12px] leading-relaxed outline-none focus:border-[#6366f1] resize-none"
                 placeholder="Content…"
               />
+              {/* Accent color picker */}
+              <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                <button
+                  onClick={(e) => { e.stopPropagation(); updateNodeData(id, { accentColor: undefined }); }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className={`w-4 h-4 rounded-full border-2 bg-transparent transition-all ${!d.accentColor ? 'border-[#999]' : 'border-[#444] hover:border-[#777]'}`}
+                  title="No color"
+                />
+                {ACCENT_COLORS.map((color) => (
+                  <button
+                    key={color}
+                    onClick={(e) => { e.stopPropagation(); updateNodeData(id, { accentColor: color }); }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-4 h-4 rounded-full border-2 transition-all hover:scale-110"
+                    style={{
+                      background: color,
+                      borderColor: d.accentColor === color ? '#fff' : 'transparent',
+                    }}
+                    title={color}
+                  />
+                ))}
+              </div>
               <p className="mt-1 text-[10px] text-[#555] select-none">Enter to save · Esc to cancel</p>
             </div>
           ) : (
