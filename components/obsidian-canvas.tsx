@@ -438,11 +438,22 @@ function CanvasView({
         redo();
       } else if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey) {
         rfRef.current?.fitView({ duration: 500, padding: 0.12 });
+      } else if (e.key === 'Delete') {
+        // Delete all currently-selected nodes (and their edges) globally,
+        // regardless of whether the ReactFlow pane has DOM focus.
+        const selected = nodesRef.current.filter((n) => n.selected);
+        if (selected.length > 0) {
+          e.preventDefault();
+          pushToHistory();
+          const ids = new Set(selected.map((n) => n.id));
+          setNodesRaw((prev) => prev.filter((n) => !ids.has(n.id)));
+          setEdgesRaw((prev) => prev.filter((ed) => !ids.has(ed.source) && !ids.has(ed.target)));
+        }
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [undo, redo]);
+  }, [undo, redo, pushToHistory, setNodesRaw, setEdgesRaw]);
 
   // ── Debounced auto-save ──────────────────────────────────────────────────────
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -762,7 +773,7 @@ function CanvasView({
         elevateEdgesOnSelect
         fitView
         fitViewOptions={{ padding: 0.12, maxZoom: 0.85 }}
-        deleteKeyCode="Delete"
+        deleteKeyCode={null}
         proOptions={{ hideAttribution: true }}
         colorMode={theme}
         className="!bg-[var(--c-bg)]"
@@ -889,8 +900,9 @@ export function ObsidianCanvas() {
         setIsHelpOpen((o) => !o);
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    // capture: true → fires before any child element can absorb the event
+    window.addEventListener('keydown', handler, { capture: true });
+    return () => window.removeEventListener('keydown', handler, { capture: true });
   }, [goBack, goForward]);
 
   // Esc: close modal chain from outermost to innermost
