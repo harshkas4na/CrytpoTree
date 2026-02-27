@@ -3,6 +3,61 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ========================================
+   CANVAS THEME VARIABLES
+   ======================================== */
+
+:root {
+  /* Dark mode defaults for canvas-specific colors */
+  --c-bg: #1a1a1a;
+  --c-surface: #161616;
+  --c-elevated: #1c1c1c;
+  --c-card: #1f1f1f;
+  --c-card-sel: #222222;
+  --c-hover: #2a2a2a;
+  --c-active: #252525;
+  --c-border: #2e2e2e;
+  --c-border-subtle: #282828;
+  --c-border-card: #3e3e3e;
+  --c-border-hover: #565656;
+  --c-text: #f2f2f2;
+  --c-text-2: #cccccc;
+  --c-text-3: #a0a0a0;
+  --c-text-4: #888888;
+  --c-text-5: #666666;
+  --c-text-6: #444444;
+  --c-text-7: #3a3a3a;
+  --c-dot: #2c2c2c;
+  --c-learned-bg: #1a2e1a;
+  --c-learned-text: #4ade80;
+  --c-learned-border: #2d4a2d;
+}
+
+.light {
+  --c-bg: #f2f2f2;
+  --c-surface: #ffffff;
+  --c-elevated: #fafafa;
+  --c-card: #ffffff;
+  --c-card-sel: #eef2ff;
+  --c-hover: #ebebeb;
+  --c-active: #e2e2e2;
+  --c-border: #e0e0e0;
+  --c-border-subtle: #e8e8e8;
+  --c-border-card: #d8d8d8;
+  --c-border-hover: #a8a8a8;
+  --c-text: #111111;
+  --c-text-2: #333333;
+  --c-text-3: #555555;
+  --c-text-4: #777777;
+  --c-text-5: #999999;
+  --c-text-6: #aaaaaa;
+  --c-text-7: #cccccc;
+  --c-dot: #d0d0d0;
+  --c-learned-bg: #f0fdf4;
+  --c-learned-text: #16a34a;
+  --c-learned-border: #bbf7d0;
+}
+
 :root {
   --background: #0a0f1a;
   --foreground: #e2e8f0;
@@ -131,7 +186,7 @@
 
 /* Remove React Flow's default white background */
 .react-flow {
-  background: #1a1a1a;
+  background: var(--c-bg);
 }
 
 /* Nodes: no extra shadow from RF wrapper */
@@ -180,17 +235,17 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(30, 41, 59, 0.5);
+  background: var(--c-elevated);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.5);
+  background: var(--c-border-card);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.7);
+  background: var(--c-border-hover);
 }
 
 /* ========================================

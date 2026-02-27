@@ -79,10 +79,10 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 380, opacity: 0 }}
       transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-      className="absolute top-0 right-0 h-full w-[360px] bg-[#161616] border-l border-[#2c2c2c] z-40 flex flex-col overflow-hidden shadow-[-8px_0_40px_rgba(0,0,0,0.5)]"
+      className="absolute top-0 right-0 h-full w-[360px] bg-[var(--c-surface)] border-l border-[var(--c-border)] z-40 flex flex-col overflow-hidden shadow-[-8px_0_40px_rgba(0,0,0,0.2)]"
     >
       {/* ── Header ── */}
-      <div className="flex items-start justify-between p-4 pb-3 border-b border-[#282828] shrink-0 sticky top-0 bg-[#161616] z-10">
+      <div className="flex items-start justify-between p-4 pb-3 border-b border-[var(--c-border-subtle)] shrink-0 sticky top-0 bg-[var(--c-surface)] z-10">
         <div className="flex items-center gap-2 flex-wrap">
           {categoryLabel && (
             <span
@@ -97,14 +97,21 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
             </span>
           )}
           {learned && (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#1a2e1a] text-[#4ade80] border border-[#2d4a2d]">
+            <span
+              className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+              style={{
+                background: 'var(--c-learned-bg)',
+                color: 'var(--c-learned-text)',
+                border: '1px solid var(--c-learned-border)',
+              }}
+            >
               Learned
             </span>
           )}
         </div>
         <button
           onClick={onClose}
-          className="text-[#555] hover:text-[#ccc] transition-colors p-0.5 -mr-0.5 mt-0.5"
+          className="text-[var(--c-text-5)] hover:text-[var(--c-text-2)] transition-colors p-0.5 -mr-0.5 mt-0.5"
         >
           <X className="w-4 h-4" />
         </button>
@@ -116,11 +123,11 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
         {/* Title block */}
         <div className="px-4 pt-4 pb-3">
           {d.emoji && <span className="text-2xl mb-2 block">{d.emoji}</span>}
-          <h2 className="text-[#f2f2f2] text-[18px] font-semibold leading-tight">
+          <h2 className="text-[var(--c-text)] text-[18px] font-semibold leading-tight">
             {d.title}
           </h2>
           {(d.subtitle ?? d.tokenSymbol) && (
-            <p className="text-[#888] text-[12px] mt-1 font-mono">
+            <p className="text-[var(--c-text-4)] text-[12px] mt-1 font-mono">
               {d.subtitle ?? d.tokenSymbol}
             </p>
           )}
@@ -133,10 +140,10 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
         {overview && (
           <div className="px-4 pt-4">
             <div className="flex items-center gap-1.5 mb-2">
-              <BookOpen className="w-3 h-3 text-[#666]" />
-              <span className="text-[10px] text-[#666] uppercase tracking-wider font-semibold">Overview</span>
+              <BookOpen className="w-3 h-3 text-[var(--c-text-5)]" />
+              <span className="text-[10px] text-[var(--c-text-5)] uppercase tracking-wider font-semibold">Overview</span>
             </div>
-            <p className="text-[#cccccc] text-[13px] leading-[1.75]">{overview}</p>
+            <p className="text-[var(--c-text-2)] text-[13px] leading-[1.75]">{overview}</p>
           </div>
         )}
 
@@ -147,12 +154,12 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
               onClick={() => setInsightExpanded((v) => !v)}
               className="flex items-center justify-between w-full mb-2 group"
             >
-              <span className="text-[10px] text-[#666] uppercase tracking-wider font-semibold group-hover:text-[#999] transition-colors">
+              <span className="text-[10px] text-[var(--c-text-5)] uppercase tracking-wider font-semibold group-hover:text-[var(--c-text-4)] transition-colors">
                 Deep Dive
               </span>
               {insightExpanded
-                ? <ChevronUp className="w-3 h-3 text-[#555]" />
-                : <ChevronDown className="w-3 h-3 text-[#555]" />
+                ? <ChevronUp className="w-3 h-3 text-[var(--c-text-6)]" />
+                : <ChevronDown className="w-3 h-3 text-[var(--c-text-6)]" />
               }
             </button>
             <AnimatePresence initial={false}>
@@ -164,7 +171,7 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <p className="text-[#b8b8b8] text-[13px] leading-[1.8] pb-1">{deepInsight}</p>
+                  <p className="text-[var(--c-text-3)] text-[13px] leading-[1.8] pb-1">{deepInsight}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -176,8 +183,8 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
           <div className="px-4 pt-3">
             <ul className="space-y-1.5">
               {d.items.map((item: string, i: number) => (
-                <li key={i} className="flex items-start gap-2 text-[13px] text-[#b8b8b8]">
-                  <span className="text-[#666] mt-0.5 select-none shrink-0">•</span>
+                <li key={i} className="flex items-start gap-2 text-[13px] text-[var(--c-text-3)]">
+                  <span className="text-[var(--c-text-5)] mt-0.5 select-none shrink-0">•</span>
                   <span>{item}</span>
                 </li>
               ))}
@@ -188,7 +195,7 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
         {/* Resources */}
         {d.resources && d.resources.length > 0 && (
           <div className="px-4 pt-4">
-            <div className="text-[10px] text-[#666] uppercase tracking-wider font-semibold mb-2.5">
+            <div className="text-[10px] text-[var(--c-text-5)] uppercase tracking-wider font-semibold mb-2.5">
               Resources
             </div>
             <div className="space-y-1">
@@ -198,9 +205,9 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
                   href={r.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg text-[12px] text-[#999] hover:text-[#eee] hover:bg-[#252525] transition-all group"
+                  className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg text-[12px] text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] transition-all group"
                 >
-                  <ExternalLink className="w-3 h-3 shrink-0 text-[#666] group-hover:text-[#aaa] transition-colors" />
+                  <ExternalLink className="w-3 h-3 shrink-0 text-[var(--c-text-5)] group-hover:text-[var(--c-text-4)] transition-colors" />
                   <span className="truncate">{r.label}</span>
                 </a>
               ))}
@@ -213,12 +220,20 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
           <div className="px-4 pt-4">
             <button
               onClick={onOpenArticle}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-[13px] font-semibold transition-all bg-[#1e1e2e] text-[#a5b4fc] border border-[#3730a3]/40 hover:bg-[#23234a] hover:border-[#6366f1]/50"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-[13px] font-semibold transition-all border"
+              style={{
+                background: `${accentColor}15`,
+                color: accentColor,
+                borderColor: `${accentColor}40`,
+              }}
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Open Article</span>
               {hasEditedArticle && (
-                <span className="ml-1 text-[10px] font-bold text-[#818cf8] bg-[#312e81]/50 px-1.5 py-0.5 rounded">
+                <span
+                  className="ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded"
+                  style={{ color: accentColor, background: `${accentColor}20` }}
+                >
                   ✎ edited
                 </span>
               )}
@@ -258,14 +273,19 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
       </div>
 
       {/* ── Footer: Mark as Learned ── */}
-      <div className="px-4 py-3 border-t border-[#282828] shrink-0 bg-[#161616]">
+      <div className="px-4 py-3 border-t border-[var(--c-border-subtle)] shrink-0 bg-[var(--c-surface)]">
         <button
           onClick={toggleLearned}
-          className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150 ${
+          className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150 border ${
             learned
-              ? 'bg-[#1a2e1a] text-[#4ade80] border border-[#2d4a2d]'
-              : 'bg-[#242424] text-[#888] border border-[#333] hover:border-[#505050] hover:text-[#ccc]'
+              ? ''
+              : 'bg-[var(--c-hover)] text-[var(--c-text-4)] border-[var(--c-border)] hover:border-[var(--c-border-hover)] hover:text-[var(--c-text-2)]'
           }`}
+          style={learned ? {
+            background: 'var(--c-learned-bg)',
+            color: 'var(--c-learned-text)',
+            borderColor: 'var(--c-learned-border)',
+          } : {}}
         >
           {learned && <Check className="w-3.5 h-3.5" />}
           {learned ? 'Marked as Learned' : 'Mark as Learned'}

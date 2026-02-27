@@ -92,7 +92,7 @@ function makeMarkdownComponents(
 ) {
   return {
     h1: ({ children }: NodeProps) => (
-      <h1 className="text-[22px] font-bold text-[#f2f2f2] mb-4 mt-6 leading-tight first:mt-0">
+      <h1 className="text-[22px] font-bold text-[var(--c-text)] mb-4 mt-6 leading-tight first:mt-0">
         {children}
       </h1>
     ),
@@ -102,7 +102,7 @@ function makeMarkdownComponents(
       return (
         <h2
           id={id}
-          className="text-[17px] font-semibold text-[#e0e0e0] mb-3 mt-8 pb-2 border-b border-[#2a2a2a] scroll-mt-20"
+          className="text-[17px] font-semibold text-[var(--c-text)] mb-3 mt-8 pb-2 border-b border-[var(--c-border-subtle)] scroll-mt-20"
         >
           {children}
         </h2>
@@ -114,14 +114,14 @@ function makeMarkdownComponents(
       return (
         <h3
           id={id}
-          className="text-[14px] font-semibold text-[#d0d0d0] mb-2 mt-6 scroll-mt-20"
+          className="text-[14px] font-semibold text-[var(--c-text-2)] mb-2 mt-6 scroll-mt-20"
         >
           {children}
         </h3>
       );
     },
     p: ({ children }: NodeProps) => (
-      <p className="text-[13.5px] text-[#c0c0c0] leading-[1.8] mb-4">{children}</p>
+      <p className="text-[13.5px] text-[var(--c-text-2)] leading-[1.8] mb-4">{children}</p>
     ),
     ul: ({ children }: NodeProps) => (
       <ul className="mb-4 space-y-1.5 pl-1">{children}</ul>
@@ -130,28 +130,28 @@ function makeMarkdownComponents(
       <ol className="mb-4 space-y-1.5 pl-5 list-decimal">{children}</ol>
     ),
     li: ({ children }: NodeProps) => (
-      <li className="text-[13.5px] text-[#c0c0c0] leading-[1.75] flex gap-2 items-start">
-        <span className="text-[#555] mt-0.5 shrink-0 select-none">•</span>
+      <li className="text-[13.5px] text-[var(--c-text-2)] leading-[1.75] flex gap-2 items-start">
+        <span className="text-[var(--c-text-5)] mt-0.5 shrink-0 select-none">•</span>
         <span>{children}</span>
       </li>
     ),
     strong: ({ children }: NodeProps) => (
-      <strong className="text-[#e8e8e8] font-semibold">{children}</strong>
+      <strong className="text-[var(--c-text)] font-semibold">{children}</strong>
     ),
     em: ({ children }: NodeProps) => (
-      <em className="text-[#b8b8b8] italic">{children}</em>
+      <em className="text-[var(--c-text-3)] italic">{children}</em>
     ),
     code: ({ children, className }: CodeProps) => {
       const isBlock = className?.includes('language-');
       if (isBlock) {
         return (
-          <code className="block bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-[12px] font-mono text-[#a8d8a8] overflow-x-auto mb-4 leading-[1.7]">
+          <code className="block bg-[var(--c-hover)] border border-[var(--c-border)] rounded-lg px-4 py-3 text-[12px] font-mono text-[var(--c-text-3)] overflow-x-auto mb-4 leading-[1.7]">
             {children}
           </code>
         );
       }
       return (
-        <code className="bg-[#222] text-[#a8d8a8] px-1.5 py-0.5 rounded text-[12px] font-mono">
+        <code className="bg-[var(--c-hover)] text-[var(--c-text-3)] px-1.5 py-0.5 rounded text-[12px] font-mono">
           {children}
         </code>
       );
@@ -161,7 +161,7 @@ function makeMarkdownComponents(
     ),
     blockquote: ({ children }: NodeProps) => (
       <blockquote
-        className="border-l-2 pl-4 py-1 mb-4 text-[13px] text-[#999] italic"
+        className="border-l-2 pl-4 py-1 mb-4 text-[13px] text-[var(--c-text-4)] italic"
         style={{ borderColor: `${accentColor}80` }}
       >
         {children}
@@ -173,17 +173,17 @@ function makeMarkdownComponents(
       </div>
     ),
     thead: ({ children }: NodeProps) => (
-      <thead className="bg-[#1e1e1e]">{children}</thead>
+      <thead className="bg-[var(--c-hover)]">{children}</thead>
     ),
     th: ({ children }: NodeProps) => (
-      <th className="px-3 py-2 text-left text-[#888] font-semibold border border-[#2a2a2a]">
+      <th className="px-3 py-2 text-left text-[var(--c-text-4)] font-semibold border border-[var(--c-border)]">
         {children}
       </th>
     ),
     td: ({ children }: NodeProps) => (
-      <td className="px-3 py-2 text-[#bbb] border border-[#2a2a2a]">{children}</td>
+      <td className="px-3 py-2 text-[var(--c-text-3)] border border-[var(--c-border)]">{children}</td>
     ),
-    hr: () => <hr className="border-[#2a2a2a] my-6" />,
+    hr: () => <hr className="border-[var(--c-border)] my-6" />,
     a: ({ href, children }: AnchorProps) => {
       if (href?.startsWith('wikilink://')) {
         const nodeId = href.replace('wikilink://', '');
@@ -261,8 +261,8 @@ function TocSidebar({
     <div className="hidden xl:flex flex-col w-[180px] shrink-0 pl-4 py-2">
       <div className="sticky top-0 pt-2">
         <div className="flex items-center gap-1.5 mb-3">
-          <AlignLeft className="w-3 h-3 text-[#555]" />
-          <span className="text-[10px] text-[#555] uppercase tracking-wider font-semibold">Contents</span>
+          <AlignLeft className="w-3 h-3 text-[var(--c-text-5)]" />
+          <span className="text-[10px] text-[var(--c-text-5)] uppercase tracking-wider font-semibold">Contents</span>
         </div>
         <div className="space-y-0.5">
           {toc.map((entry) => (
@@ -274,7 +274,7 @@ function TocSidebar({
               } ${
                 activeId === entry.id
                   ? 'font-medium'
-                  : 'text-[#555] hover:text-[#999]'
+                  : 'text-[var(--c-text-5)] hover:text-[var(--c-text-4)]'
               }`}
               style={activeId === entry.id ? { color: accentColor } : {}}
             >
@@ -401,14 +401,14 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: '-100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-        className="absolute inset-0 z-50 bg-[#131313] flex items-center justify-center"
+        className="absolute inset-0 z-50 bg-[var(--c-surface)] flex items-center justify-center"
       >
-        <div className="text-center text-[#555]">
+        <div className="text-center text-[var(--c-text-5)]">
           <BookOpen className="w-8 h-8 mx-auto mb-3" />
           <p className="text-[14px]">No article found for this node.</p>
           <button
             onClick={onClose}
-            className="mt-4 text-[12px] text-[#666] hover:text-[#aaa] transition-colors"
+            className="mt-4 text-[12px] text-[var(--c-text-5)] hover:text-[var(--c-text-3)] transition-colors"
           >
             ← Back
           </button>
@@ -423,28 +423,28 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: '-100%', opacity: 0 }}
       transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-      className="absolute inset-0 z-50 bg-[#131313] flex flex-col overflow-hidden"
+      className="absolute inset-0 z-50 bg-[var(--c-surface)] flex flex-col overflow-hidden"
     >
       {/* ── Accent stripe ── */}
       <div className="h-0.5 w-full shrink-0" style={{ background: accentColor }} />
 
       {/* ── Header ── */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#212121] shrink-0 bg-[#131313]">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--c-border)] shrink-0 bg-[var(--c-surface)]">
         {/* Close / back */}
         <button
           onClick={onClose}
-          className="flex items-center gap-1.5 text-[#555] hover:text-[#ccc] transition-colors text-[12px] shrink-0"
+          className="flex items-center gap-1.5 text-[var(--c-text-5)] hover:text-[var(--c-text-2)] transition-colors text-[12px] shrink-0"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="hidden sm:inline">Back</span>
         </button>
 
-        <div className="w-px h-4 bg-[#2a2a2a] shrink-0" />
+        <div className="w-px h-4 bg-[var(--c-border)] shrink-0" />
 
         {/* Title */}
         <div className="flex-1 flex items-center gap-2 min-w-0">
           {d.emoji && <span className="text-[18px] shrink-0">{d.emoji}</span>}
-          <h1 className="text-[15px] font-semibold text-[#e0e0e0] truncate">
+          <h1 className="text-[15px] font-semibold text-[var(--c-text)] truncate">
             {d.title}
           </h1>
         </div>
@@ -455,7 +455,7 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
             <>
               <button
                 onClick={handleReset}
-                className="flex items-center gap-1 px-2 py-1 text-[11px] text-[#666] hover:text-[#aaa] transition-colors rounded"
+                className="flex items-center gap-1 px-2 py-1 text-[11px] text-[var(--c-text-5)] hover:text-[var(--c-text-3)] transition-colors rounded"
                 title="Reset to default"
               >
                 <RotateCcw className="w-3 h-3" />
@@ -478,7 +478,7 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
           {mode === 'read' && (
             <button
               onClick={() => setMode('edit')}
-              className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] text-[#666] hover:text-[#aaa] hover:bg-[#1e1e1e] rounded-md transition-all border border-transparent hover:border-[#2a2a2a]"
+              className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] text-[var(--c-text-5)] hover:text-[var(--c-text-3)] hover:bg-[var(--c-hover)] rounded-md transition-all border border-transparent hover:border-[var(--c-border)]"
               title="Edit article (E)"
             >
               <Edit3 className="w-3 h-3" />
@@ -487,7 +487,7 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
           )}
           <button
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center text-[#555] hover:text-[#ccc] hover:bg-[#1e1e1e] rounded transition-all ml-1"
+            className="w-7 h-7 flex items-center justify-center text-[var(--c-text-5)] hover:text-[var(--c-text-2)] hover:bg-[var(--c-hover)] rounded transition-all ml-1"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -510,14 +510,14 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
               </div>
 
               {/* Footer */}
-              <div className="mt-10 pt-6 border-t border-[#1e1e1e] space-y-6">
+              <div className="mt-10 pt-6 border-t border-[var(--c-border)] space-y-6">
 
                 {/* References (wiki links in this article) */}
                 {wikiLinks.length > 0 && (
                   <div>
                     <div className="flex items-center gap-1.5 mb-3">
-                      <Link2 className="w-3 h-3 text-[#555]" />
-                      <span className="text-[10px] text-[#555] uppercase tracking-wider font-semibold">
+                      <Link2 className="w-3 h-3 text-[var(--c-text-5)]" />
+                      <span className="text-[10px] text-[var(--c-text-5)] uppercase tracking-wider font-semibold">
                         References in this article
                       </span>
                     </div>
@@ -549,8 +549,8 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
                 {backlinks.length > 0 && (
                   <div>
                     <div className="flex items-center gap-1.5 mb-3">
-                      <Link2 className="w-3 h-3 text-[#555]" />
-                      <span className="text-[10px] text-[#555] uppercase tracking-wider font-semibold">
+                      <Link2 className="w-3 h-3 text-[var(--c-text-5)]" />
+                      <span className="text-[10px] text-[var(--c-text-5)] uppercase tracking-wider font-semibold">
                         Referenced by
                       </span>
                     </div>
@@ -562,7 +562,7 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
                           <button
                             key={id}
                             onClick={() => onOpenNode(id)}
-                            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-[#666] bg-[#1e1e1e] border border-[#2a2a2a] hover:text-[#aaa] hover:border-[#333] transition-all"
+                            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-[var(--c-text-5)] bg-[var(--c-hover)] border border-[var(--c-border)] hover:text-[var(--c-text-3)] hover:border-[var(--c-border-hover)] transition-all"
                           >
                             {article.title}
                           </button>
@@ -574,7 +574,7 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
 
                 {/* Edited badge */}
                 {lastEdited && (
-                  <p className="text-[11px] text-[#444]">
+                  <p className="text-[11px] text-[var(--c-text-6)]">
                     ✎ Custom · last edited {lastEdited}
                   </p>
                 )}
@@ -595,17 +595,17 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
           <PanelGroup direction="horizontal" className="h-full">
             {/* Left: Editor */}
             <Panel defaultSize={50} minSize={30}>
-              <div className="h-full flex flex-col bg-[#0f0f0f]">
-                <div className="flex items-center gap-2 px-3 py-2 border-b border-[#1e1e1e] shrink-0">
-                  <Edit3 className="w-3 h-3 text-[#555]" />
-                  <span className="text-[10px] text-[#555] uppercase tracking-wider font-semibold">
+              <div className="h-full flex flex-col bg-[var(--c-elevated)]">
+                <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--c-border)] shrink-0">
+                  <Edit3 className="w-3 h-3 text-[var(--c-text-5)]" />
+                  <span className="text-[10px] text-[var(--c-text-5)] uppercase tracking-wider font-semibold">
                     Markdown Editor
                   </span>
                 </div>
                 <textarea
                   value={editContent}
                   onChange={(e) => handleEdit(e.target.value)}
-                  className="flex-1 w-full bg-transparent text-[13px] font-mono text-[#b8b8b8] resize-none outline-none px-4 py-4 leading-[1.8] placeholder-[#333]"
+                  className="flex-1 w-full bg-transparent text-[13px] font-mono text-[var(--c-text-3)] resize-none outline-none px-4 py-4 leading-[1.8] placeholder-[var(--c-text-7)]"
                   placeholder="Write markdown here…"
                   spellCheck={false}
                 />
@@ -613,14 +613,14 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
             </Panel>
 
             {/* Resize handle */}
-            <PanelResizeHandle className="w-px bg-[#2a2a2a] hover:bg-[#444] transition-colors cursor-col-resize" />
+            <PanelResizeHandle className="w-px bg-[var(--c-border)] hover:bg-[var(--c-border-hover)] transition-colors cursor-col-resize" />
 
             {/* Right: Preview */}
             <Panel defaultSize={50} minSize={30}>
               <div className="h-full flex flex-col">
-                <div className="flex items-center gap-2 px-3 py-2 border-b border-[#1e1e1e] shrink-0">
-                  <Eye className="w-3 h-3 text-[#555]" />
-                  <span className="text-[10px] text-[#555] uppercase tracking-wider font-semibold">
+                <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--c-border)] shrink-0">
+                  <Eye className="w-3 h-3 text-[var(--c-text-5)]" />
+                  <span className="text-[10px] text-[var(--c-text-5)] uppercase tracking-wider font-semibold">
                     Preview
                   </span>
                 </div>

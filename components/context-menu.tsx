@@ -31,8 +31,6 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Clamp so the menu never overflows the viewport.
-  // We only know height after mount, so we use a conservative estimate first
-  // and adjust in a layout effect.
   const clampedX = Math.min(x, window.innerWidth  - MENU_W - 8);
   const clampedY = Math.min(y, window.innerHeight - (items.length * 36 + 24) - 8);
 
@@ -69,13 +67,13 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
       {/* Menu panel */}
       <div
         ref={menuRef}
-        className="fixed z-[60] min-w-[192px] bg-[#1c1c1c] border border-[#2e2e2e] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.8)] py-1.5 overflow-hidden"
+        className="fixed z-[60] min-w-[192px] bg-[var(--c-elevated)] border border-[var(--c-border)] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] py-1.5 overflow-hidden"
         style={{ left: clampedX, top: clampedY }}
-        onMouseDown={(e) => e.stopPropagation()} // don't close when clicking inside
+        onMouseDown={(e) => e.stopPropagation()}
       >
         {items.map((item, i) => {
           if (item.type === 'separator') {
-            return <div key={i} className="my-1 mx-2 border-t border-[#272727]" />;
+            return <div key={i} className="my-1 mx-2 border-t border-[var(--c-border-subtle)]" />;
           }
 
           const isDanger = item.variant === 'danger';
@@ -90,18 +88,18 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
                 item.disabled
                   ? 'opacity-30 cursor-not-allowed'
                   : isDanger
-                    ? 'text-[#e05555] hover:bg-[#2a1a1a]'
-                    : 'text-[#d0d0d0] hover:bg-[#252525]',
+                    ? 'text-[#e05555] hover:bg-red-500/10'
+                    : 'text-[var(--c-text-2)] hover:bg-[var(--c-active)]',
               ].join(' ')}
             >
               {item.icon && (
-                <span className={`shrink-0 [&_svg]:w-3.5 [&_svg]:h-3.5 ${isDanger ? 'text-[#e05555]' : 'text-[#666]'}`}>
+                <span className={`shrink-0 [&_svg]:w-3.5 [&_svg]:h-3.5 ${isDanger ? 'text-[#e05555]' : 'text-[var(--c-text-5)]'}`}>
                   {item.icon}
                 </span>
               )}
               <span className="flex-1">{item.label}</span>
               {item.shortcut && (
-                <kbd className="text-[10px] text-[#3a3a3a] font-mono shrink-0">{item.shortcut}</kbd>
+                <kbd className="text-[10px] text-[var(--c-text-7)] font-mono shrink-0">{item.shortcut}</kbd>
               )}
             </button>
           );

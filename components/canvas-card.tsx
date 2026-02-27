@@ -56,7 +56,7 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
 
       {/* Group label above card */}
       {d.groupLabel && (
-        <div className="absolute -top-7 left-0 text-[11px] text-[#888] font-medium select-none pointer-events-none whitespace-nowrap tracking-wide">
+        <div className="absolute -top-7 left-0 text-[11px] text-[var(--c-text-4)] font-medium select-none pointer-events-none whitespace-nowrap tracking-wide">
           {d.groupLabel}
         </div>
       )}
@@ -67,8 +67,8 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
         className={[
           'relative w-full h-full rounded-xl overflow-hidden transition-all duration-100',
           selected
-            ? 'shadow-[0_0_0_1.5px_#6366f1,0_8px_32px_rgba(99,102,241,0.15)] bg-[#222222]'
-            : 'bg-[#1f1f1f] border border-[#3e3e3e] hover:border-[#565656] shadow-[0_2px_12px_rgba(0,0,0,0.5)]',
+            ? 'shadow-[0_0_0_1.5px_#6366f1,0_8px_32px_rgba(99,102,241,0.15)] bg-[var(--c-card-sel)]'
+            : 'bg-[var(--c-card)] border border-[var(--c-border-card)] hover:border-[var(--c-border-hover)] shadow-[0_2px_12px_rgba(0,0,0,0.15)]',
         ].join(' ')}
       >
         {/* Accent stripe */}
@@ -93,7 +93,7 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
                   if (e.key === 'Escape') setIsEditing(false);
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-full bg-[#2a2a2a] border border-[#555] rounded px-2 py-1 text-[#f0f0f0] text-[14px] font-semibold mb-2 outline-none focus:border-[#6366f1]"
+                className="w-full bg-[var(--c-hover)] border border-[var(--c-border-card)] rounded px-2 py-1 text-[var(--c-text)] text-[14px] font-semibold mb-2 outline-none focus:border-[#6366f1]"
                 placeholder="Title"
               />
               <textarea
@@ -105,7 +105,7 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
                 }}
                 onClick={(e) => e.stopPropagation()}
                 rows={4}
-                className="w-full bg-[#2a2a2a] border border-[#555] rounded px-2 py-1 text-[#a0a0a0] text-[12px] leading-relaxed outline-none focus:border-[#6366f1] resize-none"
+                className="w-full bg-[var(--c-hover)] border border-[var(--c-border-card)] rounded px-2 py-1 text-[var(--c-text-3)] text-[12px] leading-relaxed outline-none focus:border-[#6366f1] resize-none"
                 placeholder="Content…"
               />
               {/* Accent color picker */}
@@ -113,7 +113,7 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
                 <button
                   onClick={(e) => { e.stopPropagation(); updateNodeData(id, { accentColor: undefined }); }}
                   onMouseDown={(e) => e.stopPropagation()}
-                  className={`w-4 h-4 rounded-full border-2 bg-transparent transition-all ${!d.accentColor ? 'border-[#999]' : 'border-[#444] hover:border-[#777]'}`}
+                  className={`w-4 h-4 rounded-full border-2 bg-transparent transition-all ${!d.accentColor ? 'border-[var(--c-text-4)]' : 'border-[var(--c-border-card)] hover:border-[var(--c-text-5)]'}`}
                   title="No color"
                 />
                 {ACCENT_COLORS.map((color) => (
@@ -130,36 +130,36 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
                   />
                 ))}
               </div>
-              <p className="mt-1 text-[10px] text-[#555] select-none">Enter to save · Esc to cancel</p>
+              <p className="mt-1 text-[10px] text-[var(--c-text-6)] select-none">Enter to save · Esc to cancel</p>
             </div>
           ) : (
             // ── Display mode ───────────────────────────────────────────────────
             <>
               {d.title && (
-                <h2 className="text-[#f0f0f0] font-semibold text-[14px] leading-snug mb-1">
+                <h2 className="text-[var(--c-text)] font-semibold text-[14px] leading-snug mb-1">
                   {d.title}
                 </h2>
               )}
               {d.subtitle && (
-                <h3 className="text-[#aaaaaa] font-medium text-[12px] mb-2.5">
+                <h3 className="text-[var(--c-text-3)] font-medium text-[12px] mb-2.5">
                   {d.subtitle}
                 </h3>
               )}
               {d.content && (
-                <p className="text-[#a0a0a0] text-[12px] leading-relaxed">{d.content}</p>
+                <p className="text-[var(--c-text-3)] text-[12px] leading-relaxed">{d.content}</p>
               )}
               {d.items && d.items.length > 0 && (
                 <ul className={`${d.content ? 'mt-3' : ''} space-y-1.5`}>
                   {d.items.map((item, i) => (
-                    <li key={i} className="text-[#a0a0a0] text-[12px] flex items-start gap-2">
-                      <span className="text-[#5e5e5e] mt-0.5 select-none shrink-0">•</span>
+                    <li key={i} className="text-[var(--c-text-3)] text-[12px] flex items-start gap-2">
+                      <span className="text-[var(--c-text-5)] mt-0.5 select-none shrink-0">•</span>
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
               )}
               {selected && (
-                <p className="mt-2 text-[10px] text-[#555] select-none">Double-click to edit</p>
+                <p className="mt-2 text-[10px] text-[var(--c-text-6)] select-none">Double-click to edit</p>
               )}
             </>
           )}
@@ -170,22 +170,22 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
       <Handle
         type="target"
         position={Position.Top}
-        className="!w-2.5 !h-2.5 !bg-[#555] !border-[#777] !opacity-0 group-hover:!opacity-100 !transition-opacity"
+        className="!w-2.5 !h-2.5 !bg-[var(--c-border-hover)] !border-[var(--c-text-5)] !opacity-0 group-hover:!opacity-100 !transition-opacity"
       />
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!w-2.5 !h-2.5 !bg-[#555] !border-[#777] !opacity-0 group-hover:!opacity-100 !transition-opacity"
+        className="!w-2.5 !h-2.5 !bg-[var(--c-border-hover)] !border-[var(--c-text-5)] !opacity-0 group-hover:!opacity-100 !transition-opacity"
       />
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-2.5 !h-2.5 !bg-[#555] !border-[#777] !opacity-0 group-hover:!opacity-100 !transition-opacity"
+        className="!w-2.5 !h-2.5 !bg-[var(--c-border-hover)] !border-[var(--c-text-5)] !opacity-0 group-hover:!opacity-100 !transition-opacity"
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-2.5 !h-2.5 !bg-[#555] !border-[#777] !opacity-0 group-hover:!opacity-100 !transition-opacity"
+        className="!w-2.5 !h-2.5 !bg-[var(--c-border-hover)] !border-[var(--c-text-5)] !opacity-0 group-hover:!opacity-100 !transition-opacity"
       />
     </div>
   );

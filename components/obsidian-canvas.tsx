@@ -25,10 +25,12 @@ import '@xyflow/react/dist/style.css';
 import { AnimatePresence } from 'framer-motion';
 
 import {
-  ZoomIn, ZoomOut, Maximize2, ChevronLeft, StickyNote,
+  ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight, StickyNote,
   Lock, Unlock, RotateCcw, Search,
   Pencil, Copy, Trash2, Info, ArrowUpRight, HelpCircle, X,
+  Sun, Moon,
 } from 'lucide-react';
+import { useTheme } from '@/components/theme-provider';
 
 import { CanvasCard } from '@/components/canvas-card';
 import { CanvasPageNode } from '@/components/canvas-page-node';
@@ -96,6 +98,8 @@ function useLearnedProgress() {
 
 const KEYBOARD_SHORTCUTS = [
   { keys: ['⌘K'], description: 'Search all nodes' },
+  { keys: ['⌘['], description: 'Go back in canvas history' },
+  { keys: ['⌘]'], description: 'Go forward in canvas history' },
   { keys: ['F'], description: 'Fit all nodes in view' },
   { keys: ['⌘Z'], description: 'Undo' },
   { keys: ['⌘⇧Z'], description: 'Redo' },
@@ -103,7 +107,6 @@ const KEYBOARD_SHORTCUTS = [
   { keys: ['Del'], description: 'Delete selected node' },
   { keys: ['Double-click'], description: 'Edit a card' },
   { keys: ['Enter'], description: 'Save card edit' },
-  { keys: ['Esc'], description: 'Cancel card edit' },
   { keys: ['?'], description: 'Toggle this help' },
 ];
 
@@ -112,6 +115,8 @@ const KEYBOARD_SHORTCUTS = [
 function CanvasControls({
   canvasStack,
   onBack,
+  onForward,
+  canGoForward,
   onJumpTo,
   onAddCard,
   onReset,
@@ -122,6 +127,8 @@ function CanvasControls({
 }: {
   canvasStack: string[];
   onBack: () => void;
+  onForward: () => void;
+  canGoForward: boolean;
   onJumpTo: (idx: number) => void;
   onAddCard: (node: Node<CanvasNodeData>) => void;
   onReset: () => void;
@@ -148,25 +155,26 @@ function CanvasControls({
   }, [screenToFlowPosition, onAddCard]);
 
   const canvasTitle = CANVASES[canvasStack[canvasStack.length - 1]]?.title ?? 'Canvas';
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <>
       {/* ── Breadcrumb (sub-canvas only) ── */}
       {canvasStack.length > 1 && (
         <Panel position="top-center">
-          <div className="flex items-center gap-1 bg-[#1a1a1a]/90 border border-[#2e2e2e] rounded-lg px-3 py-1.5 text-[11px] backdrop-blur-sm select-none">
+          <div className="flex items-center gap-1 bg-[var(--c-elevated)]/90 border border-[var(--c-border)] rounded-lg px-3 py-1.5 text-[11px] backdrop-blur-sm select-none">
             {canvasStack.map((id, idx) => (
-              <span key={id} className="flex items-center gap-1">
-                {idx > 0 && <span className="text-[#3a3a3a] mx-0.5">/</span>}
+              <span key={idx} className="flex items-center gap-1">
+                {idx > 0 && <span className="text-[var(--c-text-7)] mx-0.5">/</span>}
                 {idx < canvasStack.length - 1 ? (
                   <button
                     onClick={() => onJumpTo(idx)}
-                    className="text-[#555] hover:text-[#aaa] transition-colors cursor-pointer"
+                    className="text-[var(--c-text-5)] hover:text-[var(--c-text-3)] transition-colors cursor-pointer"
                   >
                     {CANVASES[id]?.title ?? id}
                   </button>
                 ) : (
-                  <span className="text-[#ccc]">{CANVASES[id]?.title ?? id}</span>
+                  <span className="text-[var(--c-text-2)]">{CANVASES[id]?.title ?? id}</span>
                 )}
               </span>
             ))}
@@ -178,11 +186,11 @@ function CanvasControls({
       {canvasStack.length === 1 && (
         <Panel position="top-left">
           <div className="flex items-center gap-2 select-none">
-            <span className="text-[11px] text-[#444] font-medium tracking-wide">
+            <span className="text-[11px] text-[var(--c-text-6)] font-medium tracking-wide">
               {canvasTitle}
             </span>
             {total > 0 && (
-              <span className="text-[10px] text-[#3a3a3a] font-medium bg-[#1e1e1e] border border-[#2a2a2a] rounded-full px-2 py-0.5">
+              <span className="text-[10px] text-[var(--c-text-7)] font-medium bg-[var(--c-card)] border border-[var(--c-border)] rounded-full px-2 py-0.5">
                 {learned}/{total} learned
               </span>
             )}
@@ -192,50 +200,59 @@ function CanvasControls({
 
       {/* ── Bottom toolbar ── */}
       <Panel position="bottom-center">
-        <div className="flex items-center gap-0.5 bg-[#1c1c1c]/95 border border-[#2e2e2e] rounded-xl px-1.5 py-1.5 shadow-[0_4px_28px_rgba(0,0,0,0.7)] backdrop-blur-sm mb-1">
+        <div className="flex items-center gap-0.5 bg-[var(--c-elevated)]/95 border border-[var(--c-border)] rounded-xl px-1.5 py-1.5 shadow-[0_4px_28px_rgba(0,0,0,0.3)] backdrop-blur-sm mb-1">
 
-          {/* Back button */}
-          {canvasStack.length > 1 && (
+          {/* Back / Forward buttons */}
+          {(canvasStack.length > 1 || canGoForward) && (
             <>
               <button
                 onClick={onBack}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] text-[#999] hover:text-[#ddd] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+                disabled={canvasStack.length <= 1}
+                className="w-7 h-7 flex items-center justify-center text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Go back (⌘[)"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Back</span>
               </button>
-              <div className="w-px h-4 bg-[#2e2e2e] mx-1" />
+              <button
+                onClick={onForward}
+                disabled={!canGoForward}
+                className="w-7 h-7 flex items-center justify-center text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Go forward (⌘])"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+              <div className="w-px h-4 bg-[var(--c-border)] mx-1" />
             </>
           )}
 
           {/* Search */}
           <button
             onClick={onOpenSearch}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] text-[#999] hover:text-[#ddd] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
             title="Search nodes (⌘K)"
           >
             <Search className="w-3.5 h-3.5" />
             <span>Search</span>
           </button>
 
-          <div className="w-px h-4 bg-[#2e2e2e] mx-1" />
+          <div className="w-px h-4 bg-[var(--c-border)] mx-1" />
 
           {/* Add card */}
           <button
             onClick={addCard}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] text-[#999] hover:text-[#ddd] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
             title="Add a new card at canvas center"
           >
             <StickyNote className="w-3.5 h-3.5" />
             <span>Card</span>
           </button>
 
-          <div className="w-px h-4 bg-[#2e2e2e] mx-1" />
+          <div className="w-px h-4 bg-[var(--c-border)] mx-1" />
 
           {/* Zoom out */}
           <button
             onClick={() => zoomOut({ duration: 200 })}
-            className="w-7 h-7 flex items-center justify-center text-[#999] hover:text-[#ddd] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
             title="Zoom out"
           >
             <ZoomOut className="w-3.5 h-3.5" />
@@ -244,7 +261,7 @@ function CanvasControls({
           {/* Zoom in */}
           <button
             onClick={() => zoomIn({ duration: 200 })}
-            className="w-7 h-7 flex items-center justify-center text-[#999] hover:text-[#ddd] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
             title="Zoom in"
           >
             <ZoomIn className="w-3.5 h-3.5" />
@@ -253,13 +270,13 @@ function CanvasControls({
           {/* Fit view */}
           <button
             onClick={() => fitView({ duration: 500, padding: 0.12 })}
-            className="w-7 h-7 flex items-center justify-center text-[#999] hover:text-[#ddd] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
             title="Fit all cards in view"
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </button>
 
-          <div className="w-px h-4 bg-[#2e2e2e] mx-1" />
+          <div className="w-px h-4 bg-[var(--c-border)] mx-1" />
 
           {/* Lock view */}
           <button
@@ -267,19 +284,28 @@ function CanvasControls({
             className={`w-7 h-7 flex items-center justify-center rounded-lg transition-colors ${
               isLocked
                 ? 'text-[#6366f1] bg-[#6366f1]/10 hover:bg-[#6366f1]/20'
-                : 'text-[#999] hover:text-[#ddd] hover:bg-[#2a2a2a]'
+                : 'text-[var(--c-text-4)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]'
             }`}
             title={isLocked ? 'Unlock view (re-enable pan & drag)' : 'Lock view (prevent accidental pan/drag)'}
           >
             {isLocked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
           </button>
 
-          <div className="w-px h-4 bg-[#2e2e2e] mx-1" />
+          <div className="w-px h-4 bg-[var(--c-border)] mx-1" />
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="w-7 h-7 flex items-center justify-center text-[var(--c-text-5)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+          </button>
 
           {/* Help */}
           <button
             onClick={onOpenHelp}
-            className="w-7 h-7 flex items-center justify-center text-[#666] hover:text-[#ddd] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-[var(--c-text-5)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
             title="Keyboard shortcuts (?)"
           >
             <HelpCircle className="w-3.5 h-3.5" />
@@ -288,7 +314,7 @@ function CanvasControls({
           {/* Reset canvas */}
           <button
             onClick={onReset}
-            className="w-7 h-7 flex items-center justify-center text-[#666] hover:text-[#cc4444] hover:bg-[#2a2a2a] rounded-lg transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-[var(--c-text-5)] hover:text-[#cc4444] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
             title="Reset canvas to default layout"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -323,6 +349,8 @@ function CanvasView({
   canvasId,
   canvasStack,
   onBack,
+  onForward,
+  canGoForward,
   onJumpTo,
   onNodeSelect,
   onOpenSearch,
@@ -332,12 +360,16 @@ function CanvasView({
   canvasId: string;
   canvasStack: string[];
   onBack: () => void;
+  onForward: () => void;
+  canGoForward: boolean;
   onJumpTo: (idx: number) => void;
   onNodeSelect: (id: string, data: CanvasNodeData) => void;
   onOpenSearch: () => void;
   onOpenHelp: () => void;
   focusNodeId: string | null;
 }) {
+  const { theme } = useTheme();
+
   // ── Core state ──────────────────────────────────────────────────────────────
   const [nodes, setNodesRaw, onNodesChangeRaw] = useNodesState(getInitialNodes(canvasId));
   const [edges, setEdgesRaw, onEdgesChangeRaw] = useEdgesState(getInitialEdges(canvasId));
@@ -732,17 +764,18 @@ function CanvasView({
         fitViewOptions={{ padding: 0.12, maxZoom: 0.85 }}
         deleteKeyCode="Delete"
         proOptions={{ hideAttribution: true }}
-        className="!bg-[#1a1a1a]"
+        colorMode={theme}
+        className="!bg-[var(--c-bg)]"
       >
-        <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="#2c2c2c" />
+        <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="var(--c-dot)" />
 
         <MiniMap
           nodeColor={(node) => {
             const d = node.data as unknown as { accentColor?: string };
-            return d.accentColor ?? '#2a2a2a';
+            return d.accentColor ?? 'var(--c-hover)';
           }}
-          style={{ background: '#161616', border: '1px solid #2e2e2e', borderRadius: 8 }}
-          maskColor="rgba(0,0,0,0.65)"
+          style={{ background: 'var(--c-surface)', border: '1px solid var(--c-border)', borderRadius: 8 }}
+          maskColor="rgba(128,128,128,0.2)"
           zoomable
           pannable
         />
@@ -750,6 +783,8 @@ function CanvasView({
         <CanvasControls
           canvasStack={canvasStack}
           onBack={onBack}
+          onForward={onForward}
+          canGoForward={canGoForward}
           onJumpTo={onJumpTo}
           onAddCard={handleAddCard}
           onReset={handleResetCanvas}
@@ -779,6 +814,7 @@ function CanvasView({
 
 export function ObsidianCanvas() {
   const [canvasStack, setCanvasStack] = useState<string[]>(['main']);
+  const [forwardStack, setForwardStack] = useState<string[]>([]);
   const [selectedNode, setSelectedNode] = useState<{ id: string; data: CanvasNodeData } | null>(null);
   const [activeArticle, setActiveArticle] = useState<{ nodeId: string; data: CanvasNodeData } | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -787,38 +823,54 @@ export function ObsidianCanvas() {
   const currentCanvasId = canvasStack[canvasStack.length - 1];
 
   const navigateTo = useCallback((canvasId: string) => {
-    if (CANVASES[canvasId]) {
+    if (CANVASES[canvasId] && canvasId !== canvasStack[canvasStack.length - 1]) {
       setCanvasStack((prev) => [...prev, canvasId]);
+      setForwardStack([]); // entering a new branch clears forward history
       setSelectedNode(null);
     }
-  }, []);
+  }, [canvasStack]);
 
   const goBack = useCallback(() => {
-    setCanvasStack((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
+    if (canvasStack.length <= 1) return;
+    const leaving = canvasStack[canvasStack.length - 1];
+    setCanvasStack((prev) => prev.slice(0, -1));
+    setForwardStack((f) => [leaving, ...f]);
     setSelectedNode(null);
-  }, []);
+  }, [canvasStack]);
+
+  const goForward = useCallback(() => {
+    if (forwardStack.length === 0) return;
+    const [next, ...rest] = forwardStack;
+    if (CANVASES[next]) {
+      setCanvasStack((prev) => [...prev, next]);
+    }
+    setForwardStack(rest);
+    setSelectedNode(null);
+  }, [forwardStack]);
 
   const jumpTo = useCallback((idx: number) => {
-    setCanvasStack((prev) => prev.slice(0, idx + 1));
+    const trimmed = canvasStack.slice(0, idx + 1);
+    const removed = canvasStack.slice(idx + 1);
+    setCanvasStack(trimmed);
+    setForwardStack((f) => [...removed.reverse(), ...f]);
     setSelectedNode(null);
-  }, []);
+  }, [canvasStack]);
 
   // Search: navigate to canvas + select node + focus viewport
   const handleSearchSelect = useCallback(
     (nodeId: string, canvasId: string, data: CanvasNodeData) => {
       setIsSearchOpen(false);
       setFocusNodeId(nodeId);
-      // Set selected node AFTER navigateTo so the setSelectedNode(null) inside
-      // navigateTo doesn't win — React 18 batches these in the same tick.
       if (canvasId !== currentCanvasId) {
         setCanvasStack((prev) => (CANVASES[canvasId] ? [...prev, canvasId] : prev));
+        setForwardStack([]);
       }
       setSelectedNode({ id: nodeId, data });
     },
     [currentCanvasId],
   );
 
-  // Cmd/Ctrl + K → open search, ? → toggle help
+  // Cmd/Ctrl + K → open search; ⌘[ / ⌘] → back / forward; ? → help
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const el = document.activeElement;
@@ -826,6 +878,12 @@ export function ObsidianCanvas() {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen((o) => !o);
+      } else if ((e.ctrlKey || e.metaKey) && e.key === '[') {
+        e.preventDefault();
+        goBack();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === ']') {
+        e.preventDefault();
+        goForward();
       } else if (e.key === '?') {
         e.preventDefault();
         setIsHelpOpen((o) => !o);
@@ -833,7 +891,7 @@ export function ObsidianCanvas() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [goBack, goForward]);
 
   // Esc: close modal chain from outermost to innermost
   useEffect(() => {
@@ -862,7 +920,7 @@ export function ObsidianCanvas() {
 
   return (
     <CanvasNavContext.Provider value={navCtx}>
-      <div className="w-screen h-screen overflow-hidden bg-[#1a1a1a] relative">
+      <div className="w-screen h-screen overflow-hidden bg-[var(--c-bg)] relative">
         {/*
           key={currentCanvasId} causes a fresh mount whenever you navigate to a
           new canvas — each canvas gets its own independent node/edge state.
@@ -872,6 +930,8 @@ export function ObsidianCanvas() {
           canvasId={currentCanvasId}
           canvasStack={canvasStack}
           onBack={goBack}
+          onForward={goForward}
+          canGoForward={forwardStack.length > 0}
           onJumpTo={jumpTo}
           onNodeSelect={(id, data) => setSelectedNode({ id, data })}
           onOpenSearch={() => setIsSearchOpen(true)}
@@ -928,19 +988,19 @@ export function ObsidianCanvas() {
         {/* Keyboard shortcuts help modal */}
         {isHelpOpen && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px]"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]"
             onMouseDown={() => setIsHelpOpen(false)}
           >
             <div
-              className="w-full max-w-[400px] mx-4 bg-[#1c1c1c] border border-[#2e2e2e] rounded-2xl shadow-[0_28px_80px_rgba(0,0,0,0.85)] overflow-hidden"
+              className="w-full max-w-[400px] mx-4 bg-[var(--c-elevated)] border border-[var(--c-border)] rounded-2xl shadow-[0_28px_80px_rgba(0,0,0,0.4)] overflow-hidden"
               onMouseDown={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-[#272727]">
-                <span className="text-[13px] font-semibold text-[#d0d0d0]">Keyboard Shortcuts</span>
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--c-border-subtle)]">
+                <span className="text-[13px] font-semibold text-[var(--c-text-2)]">Keyboard Shortcuts</span>
                 <button
                   onClick={() => setIsHelpOpen(false)}
-                  className="text-[#555] hover:text-[#ccc] transition-colors"
+                  className="text-[var(--c-text-5)] hover:text-[var(--c-text-2)] transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -951,14 +1011,14 @@ export function ObsidianCanvas() {
                 {KEYBOARD_SHORTCUTS.map((s, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#222] transition-colors"
+                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[var(--c-hover)] transition-colors"
                   >
-                    <span className="text-[12px] text-[#888]">{s.description}</span>
+                    <span className="text-[12px] text-[var(--c-text-4)]">{s.description}</span>
                     <div className="flex items-center gap-1">
                       {s.keys.map((k, ki) => (
                         <kbd
                           key={ki}
-                          className="text-[10px] text-[#aaa] bg-[#252525] border border-[#333] rounded px-1.5 py-0.5 font-mono"
+                          className="text-[10px] text-[var(--c-text-3)] bg-[var(--c-active)] border border-[var(--c-border)] rounded px-1.5 py-0.5 font-mono"
                         >
                           {k}
                         </kbd>
@@ -969,8 +1029,8 @@ export function ObsidianCanvas() {
               </div>
 
               {/* Footer */}
-              <div className="px-5 py-3 border-t border-[#222] text-center text-[10px] text-[#3a3a3a] select-none">
-                Press <kbd className="text-[#555] font-mono">?</kbd> anytime to toggle
+              <div className="px-5 py-3 border-t border-[var(--c-border-subtle)] text-center text-[10px] text-[var(--c-text-7)] select-none">
+                Press <kbd className="text-[var(--c-text-5)] font-mono">?</kbd> anytime to toggle
               </div>
             </div>
           </div>
