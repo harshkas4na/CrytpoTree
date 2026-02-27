@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, BookOpen, ChevronDown, ChevronUp, Check, FileText } from 'lucide-react';
+import { X, ExternalLink, BookOpen, ChevronDown, ChevronUp, Check, FileText, Link } from 'lucide-react';
 import { ARTICLES } from '@/data/articles-data';
 import {
   type CanvasNodeData,
@@ -46,6 +46,7 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
   const [learned, setLearned] = useState(false);
   const [insightExpanded, setInsightExpanded] = useState(true);
   const [hasEditedArticle, setHasEditedArticle] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Stable localStorage key based on node id
   const storageKey = `cryptotree-learned-${nodeId}`;
@@ -109,12 +110,32 @@ export function NodeDetailPanel({ nodeId, data, onClose, onOpenArticle }: NodeDe
             </span>
           )}
         </div>
-        <button
-          onClick={onClose}
-          className="text-[var(--c-text-5)] hover:text-[var(--c-text-2)] transition-colors p-0.5 -mr-0.5 mt-0.5"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-0.5">
+          <div className="relative">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              }}
+              className={`p-0.5 transition-colors ${copied ? 'text-green-400' : 'text-[var(--c-text-5)] hover:text-[var(--c-text-2)]'}`}
+              title={copied ? 'Copied!' : 'Copy link to this node'}
+            >
+              <Link className="w-3.5 h-3.5" />
+            </button>
+            {copied && (
+              <span className="absolute -top-8 right-0 text-[10px] bg-[var(--c-elevated)] border border-[var(--c-border)] rounded px-1.5 py-0.5 whitespace-nowrap pointer-events-none">
+                Copied!
+              </span>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="text-[var(--c-text-5)] hover:text-[var(--c-text-2)] transition-colors p-0.5 -mr-0.5 mt-0.5"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* ── Scrollable body ── */}

@@ -28,7 +28,7 @@ import {
   ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight, StickyNote,
   Lock, Unlock, RotateCcw, Search,
   Pencil, Copy, Trash2, Info, ArrowUpRight, HelpCircle, X,
-  Sun, Moon,
+  Sun, Moon, Link,
 } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 
@@ -104,10 +104,10 @@ const KEYBOARD_SHORTCUTS = [
   { keys: ['⌘Z'], description: 'Undo' },
   { keys: ['⌘⇧Z'], description: 'Redo' },
   { keys: ['Esc'], description: 'Close panel / go back' },
-  { keys: ['Del'], description: 'Delete selected node' },
+  { keys: ['⌫', 'Del'], description: 'Delete selected node' },
   { keys: ['Double-click'], description: 'Edit a card' },
   { keys: ['Enter'], description: 'Save card edit' },
-  { keys: ['?'], description: 'Toggle this help' },
+  { keys: ['/'], description: 'Toggle this help' },
 ];
 
 // ─── Controls (rendered inside ReactFlow so useReactFlow() works) ─────────────
@@ -156,6 +156,12 @@ function CanvasControls({
 
   const canvasTitle = CANVASES[canvasStack[canvasStack.length - 1]]?.title ?? 'Canvas';
   const { theme, toggleTheme } = useTheme();
+  const [copied, setCopied] = useState(false);
+  const handleCopyLink = useCallback(() => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }, []);
 
   return (
     <>
@@ -302,6 +308,26 @@ function CanvasControls({
             {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
           </button>
 
+          {/* Copy Link */}
+          <div className="relative">
+            <button
+              onClick={handleCopyLink}
+              className={`w-7 h-7 flex items-center justify-center rounded-lg transition-colors ${
+                copied
+                  ? 'text-green-400'
+                  : 'text-[var(--c-text-5)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]'
+              }`}
+              title={copied ? 'Copied!' : 'Copy link to this view'}
+            >
+              <Link className="w-3.5 h-3.5" />
+            </button>
+            {copied && (
+              <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] bg-[var(--c-elevated)] border border-[var(--c-border)] rounded px-1.5 py-0.5 whitespace-nowrap pointer-events-none">
+                Copied!
+              </span>
+            )}
+          </div>
+
           {/* Help */}
           <button
             onClick={onOpenHelp}
@@ -438,9 +464,10 @@ function CanvasView({
         redo();
       } else if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey) {
         rfRef.current?.fitView({ duration: 500, padding: 0.12 });
-      } else if (e.key === 'Delete') {
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
         // Delete all currently-selected nodes (and their edges) globally,
         // regardless of whether the ReactFlow pane has DOM focus.
+        // Both Delete (forward-delete / Windows) and Backspace (Mac keyboard) are handled.
         const selected = nodesRef.current.filter((n) => n.selected);
         if (selected.length > 0) {
           e.preventDefault();
@@ -833,6 +860,37 @@ export function ObsidianCanvas() {
   const [focusNodeId, setFocusNodeId]   = useState<string | null>(null);
   const currentCanvasId = canvasStack[canvasStack.length - 1];
 
+  // Read URL params on mount — restore canvas + focused node from a shared link
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const canvasId = params.get('c');
+    const nodeId   = params.get('n');
+
+    if (canvasId && CANVASES[canvasId]) {
+      setCanvasStack(canvasId === 'main' ? ['main'] : ['main', canvasId]);
+      setForwardStack([]);
+    }
+
+    if (nodeId) {
+      const targetId = (canvasId && CANVASES[canvasId]) ? canvasId : 'main';
+      const nodeEntry = CANVASES[targetId]?.nodes.find((n) => n.id === nodeId);
+      if (nodeEntry) {
+        setFocusNodeId(nodeId);
+        setSelectedNode({ id: nodeId, data: nodeEntry.data as unknown as CanvasNodeData });
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sync URL whenever the active canvas or selected node changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (currentCanvasId !== 'main') params.set('c', currentCanvasId);
+    if (selectedNode) params.set('n', selectedNode.id);
+    const search = params.toString();
+    window.history.replaceState(null, '', search ? `?${search}` : '/');
+  }, [currentCanvasId, selectedNode]);
+
   const navigateTo = useCallback((canvasId: string) => {
     if (CANVASES[canvasId] && canvasId !== canvasStack[canvasStack.length - 1]) {
       setCanvasStack((prev) => [...prev, canvasId]);
@@ -895,7 +953,7 @@ export function ObsidianCanvas() {
       } else if ((e.ctrlKey || e.metaKey) && e.key === ']') {
         e.preventDefault();
         goForward();
-      } else if (e.key === '?') {
+      } else if (e.key === '/') {
         e.preventDefault();
         setIsHelpOpen((o) => !o);
       }
