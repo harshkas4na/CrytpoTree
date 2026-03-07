@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, ArrowRight, X } from 'lucide-react';
 import { CANVASES, CATEGORY_LABELS, type CanvasNodeData } from '@/data/canvas-data';
 
+const CANVAS_STORAGE_PREFIX = 'ct-canvas-v1-';
+
 // ─── Search index (built once at module load) ─────────────────────────────────
 
 interface IndexEntry {
@@ -48,12 +50,12 @@ interface SearchResult extends IndexEntry {
   score: number; // lower = better
 }
 
-function search(rawQuery: string): SearchResult[] {
+function search(rawQuery: string, extra: IndexEntry[] = []): SearchResult[] {
   const q = rawQuery.toLowerCase().trim();
   if (!q) return [];
 
   const out: SearchResult[] = [];
-  for (const entry of INDEX) {
+  for (const entry of [...INDEX, ...extra]) {
     let score: number;
     if (entry._title === q)              score = 0;  // exact title
     else if (entry._token === q)         score = 1;  // exact token symbol
@@ -99,7 +101,37 @@ export function SearchPalette({
   const inputRef                        = useRef<HTMLInputElement>(null);
   const listRef                         = useRef<HTMLDivElement>(null);
 
-  const results = useMemo(() => search(query), [query]);
+  // User-created cards stored in localStorage — loaded once on palette open.
+  const [userEntries, setUserEntries] = useState<IndexEntry[]>([]);
+  useEffect(() => {
+    const entries: IndexEntry[] = [];
+    for (const [canvasId, canvas] of Object.entries(CANVASES)) {
+      try {
+        const raw = localStorage.getItem(`${CANVAS_STORAGE_PREFIX}${canvasId}`);
+        if (!raw) continue;
+        const saved = JSON.parse(raw) as { version: number; userNodes?: { id: string; data: Record<string, unknown> }[] };
+        if (saved.version !== 1 || !saved.userNodes) continue;
+        for (const un of saved.userNodes) {
+          const d = un.data as unknown as CanvasNodeData;
+          entries.push({
+            nodeId: un.id,
+            canvasId,
+            canvasTitle: canvas.title,
+            data: d,
+            _title:    ((d.title ?? '') as string).toLowerCase(),
+            _token:    '',
+            _desc:     '',
+            _content:  ((un.data.content as string) ?? '').toLowerCase(),
+            _items:    ((un.data.items as string[]) ?? []).join(' ').toLowerCase(),
+            _overview: '',
+          });
+        }
+      } catch { /* ignore malformed data */ }
+    }
+    setUserEntries(entries);
+  }, []);
+
+  const results = useMemo(() => search(query, userEntries), [query, userEntries]);
   const groups  = useMemo(() => groupByCanvas(results), [results]);
 
   // Focus input on open
@@ -176,7 +208,7 @@ export function SearchPalette({
         <div ref={listRef} className="max-h-[340px] overflow-y-auto overscroll-contain">
           {!query && (
             <p className="px-4 py-10 text-center text-[12px] text-[var(--c-text-7)] select-none">
-              Search across {INDEX.length} nodes in {Object.keys(CANVASES).length} canvases
+              Search across {INDEX.length + userEntries.length} nodes in {Object.keys(CANVASES).length} canvases
             </p>
           )}
 

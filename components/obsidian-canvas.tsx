@@ -332,7 +332,7 @@ function CanvasControls({
           <button
             onClick={onOpenHelp}
             className="w-7 h-7 flex items-center justify-center text-[var(--c-text-5)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
-            title="Keyboard shortcuts (?)"
+            title="Keyboard shortcuts (/)"
           >
             <HelpCircle className="w-3.5 h-3.5" />
           </button>
@@ -381,7 +381,7 @@ function CanvasView({
   onNodeSelect,
   onOpenSearch,
   onOpenHelp,
-  focusNodeId,
+  focusTrigger,
 }: {
   canvasId: string;
   canvasStack: string[];
@@ -392,7 +392,7 @@ function CanvasView({
   onNodeSelect: (id: string, data: CanvasNodeData) => void;
   onOpenSearch: () => void;
   onOpenHelp: () => void;
-  focusNodeId: string | null;
+  focusTrigger: { nodeId: string; seq: number } | null;
 }) {
   const { theme } = useTheme();
 
@@ -575,7 +575,6 @@ function CanvasView({
       pushToHistory();
       setNodesRaw((prev) => prev.filter((n) => n.id !== nodeId));
       setEdgesRaw((prev) => prev.filter((e) => e.source !== nodeId && e.target !== nodeId));
-      setContextMenu(null);
     },
     [pushToHistory, setNodesRaw, setEdgesRaw],
   );
@@ -593,7 +592,6 @@ function CanvasView({
           data: { ...node.data, _editMode: false } as CanvasNodeData,
         },
       ]);
-      setContextMenu(null);
     },
     [pushToHistory, setNodesRaw],
   );
@@ -605,7 +603,6 @@ function CanvasView({
           n.id === nodeId ? { ...n, data: { ...n.data, _editMode: true } } : n,
         ),
       );
-      setContextMenu(null);
     },
     [setNodesRaw],
   );
@@ -649,14 +646,14 @@ function CanvasView({
               type: 'item',
               label: 'Open Details',
               icon: <Info />,
-              onClick: () => { onNodeSelect(node.id, d); setContextMenu(null); },
+              onClick: () => { onNodeSelect(node.id, d); },
             },
             ...(hasSubCanvas
               ? [{
                   type: 'item' as const,
                   label: 'Explore Ecosystem',
                   icon: <ArrowUpRight />,
-                  onClick: () => { navigateTo(pd.canvasId); setContextMenu(null); },
+                  onClick: () => { navigateTo(pd.canvasId); },
                 }]
               : []),
             { type: 'separator' },
@@ -697,7 +694,6 @@ function CanvasView({
             onClick: () => {
               pushToHistory();
               setEdgesRaw((prev) => prev.filter((e) => e.id !== edge.id));
-              setContextMenu(null);
             },
           },
         ],
@@ -733,7 +729,6 @@ function CanvasView({
                 data: { type: 'card' as const, title: 'New Card', content: 'Edit this card…' },
                 style: { width: 280 },
               });
-              setContextMenu(null);
             },
           },
           { type: 'separator' },
@@ -744,7 +739,6 @@ function CanvasView({
             shortcut: 'F',
             onClick: () => {
               rfRef.current?.fitView({ duration: 500, padding: 0.12 });
-              setContextMenu(null);
             },
           },
           {
@@ -752,7 +746,7 @@ function CanvasView({
             label: 'Search…',
             icon: <Search />,
             shortcut: '⌘K',
-            onClick: () => { onOpenSearch(); setContextMenu(null); },
+            onClick: () => { onOpenSearch(); },
           },
           { type: 'separator' },
           {
@@ -760,7 +754,7 @@ function CanvasView({
             label: 'Reset Canvas',
             icon: <RotateCcw />,
             variant: 'danger',
-            onClick: () => { handleResetCanvas(); setContextMenu(null); },
+            onClick: () => { handleResetCanvas(); },
           },
         ],
       });
@@ -832,7 +826,7 @@ function CanvasView({
           onToggleLock={() => setIsLocked((l) => !l)}
         />
 
-        {focusNodeId && <FocusOnMount key={focusNodeId} nodeId={focusNodeId} />}
+        {focusTrigger && <FocusOnMount key={`${focusTrigger.nodeId}-${focusTrigger.seq}`} nodeId={focusTrigger.nodeId} />}
       </ReactFlow>
 
       {/* Context menu — rendered outside ReactFlow to avoid z-index conflicts */}
@@ -857,7 +851,8 @@ export function ObsidianCanvas() {
   const [activeArticle, setActiveArticle] = useState<{ nodeId: string; data: CanvasNodeData } | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen]     = useState(false);
-  const [focusNodeId, setFocusNodeId]   = useState<string | null>(null);
+  // focusTrigger: seq increments on each new focus request so same nodeId can re-trigger.
+  const [focusTrigger, setFocusTrigger] = useState<{ nodeId: string; seq: number } | null>(null);
   const currentCanvasId = canvasStack[canvasStack.length - 1];
 
   // Read URL params on mount — restore canvas + focused node from a shared link
@@ -875,7 +870,7 @@ export function ObsidianCanvas() {
       const targetId = (canvasId && CANVASES[canvasId]) ? canvasId : 'main';
       const nodeEntry = CANVASES[targetId]?.nodes.find((n) => n.id === nodeId);
       if (nodeEntry) {
-        setFocusNodeId(nodeId);
+        setFocusTrigger({ nodeId, seq: 1 });
         setSelectedNode({ id: nodeId, data: nodeEntry.data as unknown as CanvasNodeData });
       }
     }
@@ -896,6 +891,7 @@ export function ObsidianCanvas() {
       setCanvasStack((prev) => [...prev, canvasId]);
       setForwardStack([]); // entering a new branch clears forward history
       setSelectedNode(null);
+      setFocusTrigger(null);
     }
   }, [canvasStack]);
 
@@ -905,6 +901,7 @@ export function ObsidianCanvas() {
     setCanvasStack((prev) => prev.slice(0, -1));
     setForwardStack((f) => [leaving, ...f]);
     setSelectedNode(null);
+    setFocusTrigger(null);
   }, [canvasStack]);
 
   const goForward = useCallback(() => {
@@ -915,6 +912,7 @@ export function ObsidianCanvas() {
     }
     setForwardStack(rest);
     setSelectedNode(null);
+    setFocusTrigger(null);
   }, [forwardStack]);
 
   const jumpTo = useCallback((idx: number) => {
@@ -923,15 +921,17 @@ export function ObsidianCanvas() {
     setCanvasStack(trimmed);
     setForwardStack((f) => [...removed.reverse(), ...f]);
     setSelectedNode(null);
+    setFocusTrigger(null);
   }, [canvasStack]);
 
   // Search: navigate to canvas + select node + focus viewport
   const handleSearchSelect = useCallback(
     (nodeId: string, canvasId: string, data: CanvasNodeData) => {
       setIsSearchOpen(false);
-      setFocusNodeId(nodeId);
+      setFocusTrigger((prev) => ({ nodeId, seq: (prev?.seq ?? 0) + 1 }));
       if (canvasId !== currentCanvasId) {
-        setCanvasStack((prev) => (CANVASES[canvasId] ? [...prev, canvasId] : prev));
+        // Build a clean stack instead of appending (avoids e.g. ['main','eth','main']).
+        setCanvasStack(canvasId === 'main' ? ['main'] : ['main', canvasId]);
         setForwardStack([]);
       }
       setSelectedNode({ id: nodeId, data });
@@ -1006,7 +1006,7 @@ export function ObsidianCanvas() {
           onNodeSelect={(id, data) => setSelectedNode({ id, data })}
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenHelp={() => setIsHelpOpen(true)}
-          focusNodeId={focusNodeId}
+          focusTrigger={focusTrigger}
         />
 
         {/* Slide-in detail panel */}

@@ -31,8 +31,10 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Clamp so the menu never overflows the viewport.
+  // Separators are ~9px tall; items are ~36px each.
+  const estimatedH = items.reduce((h, item) => h + (item.type === 'separator' ? 9 : 36), 24);
   const clampedX = Math.min(x, window.innerWidth  - MENU_W - 8);
-  const clampedY = Math.min(y, window.innerHeight - (items.length * 36 + 24) - 8);
+  const clampedY = Math.min(y, window.innerHeight - estimatedH - 8);
 
   // Escape closes the menu
   useEffect(() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Handle, Position, NodeResizer, useReactFlow, type NodeProps } from '@xyflow/react';
 import type { CardData } from '@/data/canvas-data';
 
@@ -17,7 +17,14 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
   const [editContent, setEditContent] = useState(d.content ?? '');
   const { updateNodeData } = useReactFlow();
 
+  // Track whether the user explicitly cancelled (Escape) so onBlur doesn't commit.
+  const escapedRef = useRef(false);
+
   const commitEdit = useCallback(() => {
+    if (escapedRef.current) {
+      escapedRef.current = false;
+      return;
+    }
     updateNodeData(id, { title: editTitle, content: editContent });
     setIsEditing(false);
   }, [id, editTitle, editContent, updateNodeData]);
@@ -89,8 +96,8 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
                 onChange={(e) => setEditTitle(e.target.value)}
                 onBlur={commitEdit}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') commitEdit();
-                  if (e.key === 'Escape') setIsEditing(false);
+                  if (e.key === 'Enter') { e.preventDefault(); commitEdit(); }
+                  if (e.key === 'Escape') { escapedRef.current = true; setIsEditing(false); }
                 }}
                 onClick={(e) => e.stopPropagation()}
                 className="w-full bg-[var(--c-hover)] border border-[var(--c-border-card)] rounded px-2 py-1 text-[var(--c-text)] text-[14px] font-semibold mb-2 outline-none focus:border-[#6366f1]"
@@ -101,7 +108,8 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
                 onChange={(e) => setEditContent(e.target.value)}
                 onBlur={commitEdit}
                 onKeyDown={(e) => {
-                  if (e.key === 'Escape') setIsEditing(false);
+                  if (e.key === 'Escape') { escapedRef.current = true; setIsEditing(false); }
+                  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); commitEdit(); }
                 }}
                 onClick={(e) => e.stopPropagation()}
                 rows={4}
@@ -111,16 +119,17 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
               {/* Accent color picker */}
               <div className="mt-2 flex items-center gap-1.5 flex-wrap">
                 <button
+                  // preventDefault on mousedown prevents the textarea from blurring
+                  onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   onClick={(e) => { e.stopPropagation(); updateNodeData(id, { accentColor: undefined }); }}
-                  onMouseDown={(e) => e.stopPropagation()}
                   className={`w-4 h-4 rounded-full border-2 bg-transparent transition-all ${!d.accentColor ? 'border-[var(--c-text-4)]' : 'border-[var(--c-border-card)] hover:border-[var(--c-text-5)]'}`}
                   title="No color"
                 />
                 {ACCENT_COLORS.map((color) => (
                   <button
                     key={color}
+                    onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onClick={(e) => { e.stopPropagation(); updateNodeData(id, { accentColor: color }); }}
-                    onMouseDown={(e) => e.stopPropagation()}
                     className="w-4 h-4 rounded-full border-2 transition-all hover:scale-110"
                     style={{
                       background: color,
@@ -130,7 +139,7 @@ export function CanvasCard({ id, data, selected }: NodeProps) {
                   />
                 ))}
               </div>
-              <p className="mt-1 text-[10px] text-[var(--c-text-6)] select-none">Enter to save · Esc to cancel</p>
+              <p className="mt-1 text-[10px] text-[var(--c-text-6)] select-none">Enter / ⌘↵ to save · Esc to cancel</p>
             </div>
           ) : (
             // ── Display mode ───────────────────────────────────────────────────

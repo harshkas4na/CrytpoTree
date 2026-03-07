@@ -83,6 +83,7 @@ function preprocessWikiLinks(content: string): string {
 // ─── Markdown Components ───────────────────────────────────────────────────
 
 type NodeProps = { children?: React.ReactNode };
+type ListItemProps = { children?: React.ReactNode; ordered?: boolean; index?: number };
 type CodeProps = { children?: React.ReactNode; className?: string };
 type AnchorProps = { children?: React.ReactNode; href?: string };
 
@@ -129,9 +130,15 @@ function makeMarkdownComponents(
     ol: ({ children }: NodeProps) => (
       <ol className="mb-4 space-y-1.5 pl-5 list-decimal">{children}</ol>
     ),
-    li: ({ children }: NodeProps) => (
+    li: ({ children, ordered, index }: ListItemProps) => (
       <li className="text-[13.5px] text-[var(--c-text-2)] leading-[1.75] flex gap-2 items-start">
-        <span className="text-[var(--c-text-5)] mt-0.5 shrink-0 select-none">•</span>
+        {ordered ? (
+          <span className="text-[var(--c-text-4)] mt-0.5 shrink-0 select-none tabular-nums min-w-[1.5em] text-right">
+            {(index ?? 0) + 1}.
+          </span>
+        ) : (
+          <span className="text-[var(--c-text-5)] mt-0.5 shrink-0 select-none">•</span>
+        )}
         <span>{children}</span>
       </li>
     ),
@@ -323,22 +330,6 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
     }
   }, [nodeId, storageKey, defaultArticle]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      } else if (e.key === 'e' || e.key === 'E') {
-        // Only toggle if not focused on textarea
-        if (document.activeElement?.tagName !== 'TEXTAREA') {
-          setMode((m) => (m === 'read' ? 'edit' : 'read'));
-        }
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
-
   // Debounced auto-save
   const handleEdit = useCallback(
     (val: string) => {
@@ -369,6 +360,27 @@ export function ArticleViewer({ nodeId, nodeData, onClose, onOpenNode }: Article
     }
     setMode('read');
   }, [storageKey, editContent]);
+
+  // Keyboard shortcuts — declared after switchToRead so it can be referenced.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        // In edit mode, flush any pending save and return to read view first.
+        if (mode === 'edit') {
+          switchToRead();
+        } else {
+          onClose();
+        }
+      } else if (e.key === 'e' || e.key === 'E') {
+        // Only toggle if not focused on textarea
+        if (document.activeElement?.tagName !== 'TEXTAREA') {
+          setMode((m) => (m === 'read' ? 'edit' : 'read'));
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose, mode, switchToRead]);
 
   const handleReset = useCallback(() => {
     if (!confirm('Reset to default content? This will remove your edits.')) return;
