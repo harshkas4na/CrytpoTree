@@ -1,0 +1,121 @@
+import { type Node, type Edge, MarkerType } from '@xyflow/react';
+import type { CanvasNodeData } from '../canvas-data';
+
+const E = {
+  style: { stroke: '#585858', strokeWidth: 1.5 },
+  markerEnd: { type: MarkerType.ArrowClosed, color: '#585858', width: 10, height: 10 },
+};
+
+export const regulationNodes: Node<CanvasNodeData>[] = [
+  {
+    id: 'reg-overview',
+    type: 'card',
+    position: { x: 0, y: -40 },
+    data: {
+      type: 'card',
+      title: 'Regulation & Compliance',
+      subtitle: 'The Rules Shaping Crypto\'s Future',
+      content: 'MiCA in the EU, GENIUS Act in the US, Bitcoin ETFs holding $120B+ AUM, and the ongoing battle between innovation and oversight.',
+      accentColor: '#64748b',
+      category: 'rwa',
+      shortOverview: 'The global regulatory landscape for crypto — from EU\'s comprehensive MiCA framework to US ETF approvals, stablecoin laws, and the shifting SEC enforcement approach.',
+      deepInsight: 'Regulation is the invisible hand shaping crypto\'s trajectory. The EU led with MiCA — the world\'s most comprehensive crypto law, requiring licensing for all Crypto-Asset Service Providers (CASPs) with passporting across 27 member states. By November 2025, over €540M in fines had been issued. The US followed with the GENIUS Act (signed July 2025), creating the first federal stablecoin framework requiring 1:1 reserves and banning algorithmic stablecoins. Bitcoin spot ETFs launched in January 2024 and accumulated $120B+ in AUM — BlackRock\'s IBIT alone holds ~$55B. ETFs made Bitcoin accessible to pension funds, endowments, and RIAs for the first time, contributing to Bitcoin\'s rise from ~$46K to $100K+. The SEC underwent a dramatic policy shift under new leadership — dropping cases against Uniswap, ConsenSys, and OpenSea, rescinding SAB 121, and forming a Crypto Task Force for clear rules. The global picture varies wildly: Dubai and Singapore are crypto-friendly, China maintains a complete ban, India imposes punishing 30% tax + 1% TDS, and El Salvador made Bitcoin legal tender.',
+    },
+    style: { width: 380 },
+  },
+  {
+    id: 'reg-us-regulation',
+    type: 'card',
+    position: { x: -700, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'UNITED STATES',
+      title: 'US Crypto Regulation',
+      content: 'From enforcement-first to rules-first: GENIUS Act for stablecoins, ETF approvals, SEC policy reversal, and $120B+ in Bitcoin ETF AUM.',
+      items: ['GENIUS Act: 1:1 reserves, monthly attestations, signed Jul 2025', 'Bitcoin ETFs: $120B+ AUM, IBIT ~$55B (BlackRock)', 'Ethereum ETFs: $22B+ AUM, staking approved early 2025', 'SEC dropped cases: Uniswap, ConsenSys, OpenSea', 'SAB 121 rescinded — banks can custody crypto', 'Binance: $4.3B fine, largest enforcement action'],
+      accentColor: '#64748b',
+      category: 'rwa',
+      shortOverview: 'The US regulatory environment shifted from aggressive SEC enforcement to structured rulemaking — ETF approvals, stablecoin legislation, and dropped lawsuits signal a maturing approach.',
+      deepInsight: `US crypto regulation underwent a dramatic transformation. Under Gary Gensler, the SEC pursued "enforcement-first" — suing Coinbase, Binance ($4.3B settlement), Kraken ($30M fine), and sending Wells Notices to Uniswap, ConsenSys, and OpenSea. The Ripple case produced a landmark ruling: programmatic secondary market sales of XRP are not securities. Under new Chair Paul Atkins (2025+), the SEC reversed course: dropped cases against Uniswap, ConsenSys (MetaMask), and OpenSea, rescinded SAB 121 so banks can custody crypto without balance sheet impact, and issued guidance that sufficiently decentralized tokens are NOT securities. A Crypto Task Force was formed to create clear frameworks. The GENIUS Act (Guiding and Establishing National Innovation for US Stablecoins) became the first comprehensive stablecoin law — requiring 1:1 backing in Treasuries/cash, monthly attestations, annual audits, same-day redemption, and consumer super-priority in bankruptcy. Issuers above $10B market cap need federal oversight. Algorithmic stablecoins are effectively banned. Bitcoin spot ETFs (launched Jan 2024) accumulated $120B+ AUM with $40B+ net inflows — IBIT alone holds ~$55B. Ethereum ETFs reached $22B+ with staking approved in early 2025.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'reg-eu-mica',
+    type: 'card',
+    position: { x: -320, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'EUROPEAN UNION',
+      title: 'MiCA Framework',
+      content: 'The world\'s most comprehensive crypto law: licensing, passporting, stablecoin rules, and €540M+ in fines by November 2025.',
+      items: ['Full enforcement since Jan 2025 across 27 EU states', 'CASPs need authorization + passporting rights', 'Capital requirements: €50K-€150K minimum', 'Stablecoin rules: 100% reserves, redeemable at par', 'USDT concerns: not fully MiCA-compliant, some delistings', 'USDC advantage: Circle obtained MiCA license'],
+      accentColor: '#64748b',
+      category: 'rwa',
+      shortOverview: 'The EU\'s MiCA regulation — the most detailed crypto law globally, requiring CASP licensing, stablecoin reserves, and consumer protections across all 27 member states.',
+      deepInsight: `MiCA (Markets in Crypto-Assets) is the gold standard of crypto regulation. Proposed in September 2020, published in June 2023, and fully enforced since January 2025 across all 27 EU member states. Every Crypto-Asset Service Provider (CASP) must be authorized in at least one EU country, then gets passporting rights to operate across all 27 states. Requirements include: €50K-€150K minimum capital, fit-and-proper management governance, segregated client asset custody, full AML/KYC compliance, and mandatory white papers for token issuance. Stablecoin rules are especially strict: E-Money Tokens (single fiat peg) must be issued by credit or e-money institutions with 100% reserves in safe assets, redeemable at par at any time. "Significant" stablecoins (>€1M daily transactions or >€200M market cap) face additional oversight. The impact has been enormous: €540M+ in fines issued by November 2025, many smaller exchanges exiting the EU or consolidating, and compliance costs of €500K-€2M+ for initial licensing plus €200K-€500K/yr ongoing. USDT faces delisting pressure as Tether lacks an EU banking license, while Circle's USDC gained advantage by obtaining MiCA authorization. MiCA is becoming a template for other jurisdictions drafting their own frameworks.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'reg-asia-middle-east',
+    type: 'card',
+    position: { x: 80, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'GLOBAL LANDSCAPE',
+      title: 'Asia & Middle East',
+      content: 'A spectrum from complete ban (China) to red carpet (Dubai). Singapore, Hong Kong, Japan, and UAE competing for crypto hub status.',
+      items: ['Dubai/UAE (VARA): dedicated crypto regulator, free zones', 'Singapore (MAS): licensed framework, clear guidelines', 'Hong Kong: dual licensing, stablecoin sandbox', 'Japan: registered exchanges, favorable tax reforms', 'South Korea: strict investor protection, exchange licensing', 'China: complete ban on trading and mining since 2021'],
+      accentColor: '#64748b',
+      category: 'rwa',
+      shortOverview: 'Asia and the Middle East represent the full spectrum — from China\'s complete ban to Dubai\'s dedicated crypto regulator (VARA) and Singapore\'s licensed framework.',
+      deepInsight: `The Eastern regulatory landscape is a study in contrasts. Dubai/UAE created VARA — the world's first dedicated crypto regulator — plus free zones (DIFC, ADGM) with clear licensing and low costs ($50K-$200K to set up, $100K-$300K/yr compliance). Result: Binance, Crypto.com, and hundreds of startups relocated there. Singapore (MAS Payment Services Act) requires licensing but provides clear guidelines ($50K-$150K licensing, $150K-$400K/yr compliance) — favored by institutional-grade projects. Hong Kong launched dual licensing (retail + institutional) and a stablecoin sandbox, competing directly with Singapore. Japan is quietly progressive: registered exchanges, a stablecoin law since 2023, and favorable tax reforms making it attractive for developers. South Korea passed the Virtual Asset User Protection Act — strict KYC/AML and investor protection but maintaining one of the world's highest crypto trading volumes. China maintains its complete ban on crypto trading and mining since 2021, though it actively encourages blockchain R&D. India's approach is punishing: 30% tax on crypto gains + 1% TDS on transactions, with no clear regulatory framework — driving activity underground. El Salvador made Bitcoin legal tender (2021) and accumulated $350M+ in Bitcoin reserves. The regulatory arbitrage is real: startups choose Dubai/Singapore over US/EU for lower costs and clearer rules.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'reg-key-themes',
+    type: 'card',
+    position: { x: -520, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'LEGAL PRECEDENTS',
+      title: 'Key Themes & Legal Battles',
+      content: 'Tornado Cash, DeFi regulation, developer liability — the legal precedents being set now will define crypto for decades.',
+      items: ['Tornado Cash: OFAC sanctions lifted (Jan 2025), code ≠ property', 'Roman Storm: DOJ dropped charges (Mar 2025)', 'Pertsev: convicted 5yr 4mo in Netherlands (divergent outcome)', 'DeFi: "regulate the frontend, not the protocol" emerging', 'CFTC v. Ooki DAO: token holders = liable partners', 'IRS DeFi broker rules challenged in court'],
+      accentColor: '#64748b',
+      category: 'rwa',
+      shortOverview: 'The legal battles establishing crypto precedent — Tornado Cash sanctions, developer liability, DeFi regulation approaches, and the tension between innovation and oversight.',
+      deepInsight: `The Tornado Cash saga established the most important legal precedent in crypto. In August 2022, OFAC sanctioned the privacy mixer — the first time open-source smart contracts were sanctioned. Developer Alexey Pertsev was arrested in the Netherlands, Roman Storm in the US. In November 2024, the 5th Circuit ruled that OFAC overstepped: immutable code is not "property" of a foreign national and cannot be sanctioned. OFAC removed Tornado Cash from the SDN list in January 2025, and DOJ dropped charges against Storm in March 2025. However, Pertsev was convicted to 5 years 4 months in the Netherlands — a stark US/EU divergence on developer liability. For DeFi regulation, the emerging consensus is "compliant frontends + permissionless protocols": Uniswap Labs implements KYC/geo-blocking on its frontend, but the smart contracts remain immutable and accessible. CFTC v. Ooki DAO established that DAO token holders can be treated as partners of an unincorporated association — liable for protocol actions. The IRS attempted to classify DeFi protocols as "brokers" for 1099 reporting, but this faces court challenges. The core tension remains: how do you regulate autonomous code with no CEO, no office, and no off switch?`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'reg-compliance-infra',
+    type: 'card',
+    position: { x: 80, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'INDUSTRY IMPACT',
+      title: 'Compliance Infrastructure',
+      content: 'The cost of going legit: $1M-$3M+ in the US, €500K-€2M+ in the EU. Compliance is now a moat, not just a cost center.',
+      items: ['US Year 1: $1M-$3M+ (MTL per state, legal, AML/KYC)', 'EU Year 1: €500K-€2M+ (MiCA licensing)', 'Dubai: $50K-$200K setup (fastest, cheapest)', 'AML/KYC tools: Chainalysis, Elliptic — $100K-$300K/yr', 'Compliance staff: $300K-$500K/yr (2-3 officers)', 'Result: only well-funded startups survive, favors incumbents'],
+      accentColor: '#64748b',
+      category: 'rwa',
+      shortOverview: 'The growing compliance industry serving crypto companies — from $1M+ licensing costs to AML/KYC tooling, creating barriers to entry that favor well-funded incumbents.',
+      deepInsight: `Compliance has become the single largest barrier to entry in crypto. In the US, getting fully licensed requires Money Transmitter Licenses across all 50 states ($50K-$500K each), BitLicense for New York ($100K+ just for the application), $200K-$1M/yr in legal counsel, $300K-$500K/yr for compliance staff (2-3 officers minimum), $100K-$300K/yr for AML/KYC systems (Chainalysis, Elliptic), and $100K-$300K/yr for audits — total Year 1 cost: $1M-$3M+. In the EU under MiCA, it's €500K-€2M+ for initial licensing plus €200K-€500K/yr ongoing. Dubai offers the fastest, cheapest path at $50K-$200K setup with $100K-$300K/yr compliance. This creates a profound dynamic: compliance is now a competitive moat. Coinbase, Binance, and Kraken can absorb these costs; a 5-person startup cannot. Many startups choose Dubai or Singapore over the US/EU purely for lower compliance costs. Investors now require regulatory strategy before funding — "compliance-first" is the new standard. The irony: regulations designed to protect consumers also protect incumbents by raising barriers. The DeFi counterargument: permissionless protocols with no legal entity sidestep compliance entirely — at least until someone builds a frontend.`,
+    },
+    style: { width: 300 },
+  },
+];
+
+export const regulationEdges: Edge[] = [
+  { id: 'reg-ov-us', source: 'reg-overview', target: 'reg-us-regulation', ...E },
+  { id: 'reg-ov-eu', source: 'reg-overview', target: 'reg-eu-mica', ...E },
+  { id: 'reg-ov-asia', source: 'reg-overview', target: 'reg-asia-middle-east', ...E },
+  { id: 'reg-us-themes', source: 'reg-us-regulation', target: 'reg-key-themes', ...E },
+  { id: 'reg-eu-themes', source: 'reg-eu-mica', target: 'reg-key-themes', ...E },
+  { id: 'reg-asia-comp', source: 'reg-asia-middle-east', target: 'reg-compliance-infra', ...E },
+  { id: 'reg-themes-comp', source: 'reg-key-themes', target: 'reg-compliance-infra', ...E },
+];

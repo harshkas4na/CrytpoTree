@@ -1,0 +1,121 @@
+import { type Node, type Edge, MarkerType } from '@xyflow/react';
+import type { CanvasNodeData } from '../canvas-data';
+
+const E = {
+  style: { stroke: '#585858', strokeWidth: 1.5 },
+  markerEnd: { type: MarkerType.ArrowClosed, color: '#585858', width: 10, height: 10 },
+};
+
+export const interoperabilityNodes: Node<CanvasNodeData>[] = [
+  {
+    id: 'iop-overview',
+    type: 'card',
+    position: { x: 0, y: -40 },
+    data: {
+      type: 'card',
+      title: 'Interoperability & Cross-Chain',
+      subtitle: 'Connecting the Multi-Chain World',
+      content: 'Bridges, messaging protocols, chain abstraction, and the quest to make 100+ blockchains feel like one. Over $3B lost to bridge hacks — security is existential here.',
+      accentColor: '#d946ef',
+      category: 'bridge',
+      shortOverview: 'The infrastructure that connects isolated blockchains — bridges, cross-chain messaging, intent systems, and chain abstraction protocols.',
+      deepInsight: 'Blockchains are isolated by default — Ethereum cannot read Solana state, Bitcoin cannot call an Arbitrum contract. Interoperability solves this. Canonical bridges (Arbitrum Bridge ~$15B TVL, Optimism Bridge ~$7B TVL) hold the most value but suffer 7-day withdrawal delays for optimistic rollups. Third-party bridges like Stargate ($500M TVL, $3B/month volume) and Across ($200M TVL, $2B/month) compete on speed and UX. But bridges are honeypots: $3B+ has been stolen across major hacks — Ronin ($625M), Wormhole ($325M), Nomad ($190M). Bridge losses accounted for 53% of all crypto hacks in 2022. The industry is shifting from lock-and-mint bridges to messaging protocols and intent-based systems that minimize locked value at risk.',
+    },
+    style: { width: 380 },
+  },
+  {
+    id: 'iop-multi-chain-problem',
+    type: 'card',
+    position: { x: -700, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'THE PROBLEM',
+      title: 'The Multi-Chain Problem',
+      content: 'Liquidity fragmented across 100+ chains. Users juggle multiple wallets, bridge fees, and incompatible ecosystems.',
+      items: ['Canonical bridges hold $30B+ combined TVL', 'Arbitrum Bridge ~$15B, Optimism Bridge ~$7B', '7-day withdrawal delay for optimistic rollups', 'Users need different wallets per ecosystem', 'Gas tokens differ chain to chain', 'Composability breaks across chains'],
+      accentColor: '#d946ef',
+      category: 'bridge',
+      shortOverview: 'The fundamental challenge: 100+ blockchains each operate in isolation, fragmenting liquidity, users, and developer attention.',
+      deepInsight: `Imagine the internet if every website needed its own browser. That's the multi-chain world today. Ethereum has ~$60B in DeFi TVL, Solana ~$8B, Arbitrum ~$15B, Base ~$14B — but they can't natively talk to each other. A user with USDC on Arbitrum who wants to use a Solana dApp must: find a bridge, pay bridging fees ($1-$20), wait minutes to hours, hope the bridge doesn't get hacked, then get SOL for gas. Canonical bridges (official L1↔L2) hold the most TVL by far but impose painful delays — optimistic rollups require 7 days for withdrawals. This fragmentation is the single biggest UX barrier in crypto. The Superchain (OP Stack) and AggLayer (Polygon) are competing visions to unify their respective ecosystems, while chain abstraction aims to hide chains from users entirely.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'iop-bridge-types',
+    type: 'card',
+    position: { x: -320, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'BRIDGE ARCHITECTURE',
+      title: 'Bridge Types & Security',
+      content: 'Lock-and-mint, liquidity networks, intent-based — each bridge design makes different trust and security tradeoffs.',
+      items: ['Lock-and-mint (Wormhole — $300M TVL)', 'Liquidity networks (Stargate — $500M TVL)', 'Intent-based (Across — $200M TVL, fills in seconds)', 'Maker model (Orbiter — $1B/month, low TVL)', '$3B+ lost to bridge hacks all-time', 'Ronin $625M, Wormhole $325M, Nomad $190M'],
+      accentColor: '#d946ef',
+      category: 'bridge',
+      shortOverview: 'The different architectural approaches to bridging assets across chains — each with distinct security models, speed, and trust assumptions.',
+      deepInsight: `Bridge design is a spectrum from trust to trustlessness. Lock-and-mint bridges (Wormhole) lock tokens on the source chain and mint wrapped versions on the destination — simple but creates honeypots ($325M stolen from Wormhole in Feb 2022 via signature verification bypass). Liquidity networks (Stargate) use liquidity pools on each chain — no wrapped tokens, but require deep liquidity. Intent-based bridges (Across) flip the model: users express what they want, relayers fill orders in 1-5 seconds, then settle later. Across grew rapidly because of this UX advantage. The vulnerability pattern is clear: Ronin ($625M) — 5/9 validator keys compromised by Lazarus Group; Harmony ($100M) — 2/5 multisig; Nomad ($190M) — smart contract bug so simple anyone could copy the exploit. Bridge losses dropped from $2B in 2022 to ~$200M in 2024 as the industry moved to more robust designs.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'iop-messaging-protocols',
+    type: 'card',
+    position: { x: 80, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'MESSAGING LAYER',
+      title: 'Cross-Chain Messaging',
+      content: 'General-purpose messaging protocols that let smart contracts on different chains communicate — the TCP/IP of crypto.',
+      items: ['LayerZero — 50+ chains, composable OApps', 'Chainlink CCIP — institutional, rate limits', 'Axelar — 60+ chains, Cosmos-native', 'Wormhole — 30+ chains, NTT standard', 'Hyperlane — permissionless, 100+ chains', 'IBC (Cosmos) — 100M+ packets transferred'],
+      accentColor: '#d946ef',
+      category: 'bridge',
+      shortOverview: 'General-purpose protocols enabling arbitrary message passing between blockchains — not just token transfers but cross-chain function calls.',
+      deepInsight: `Cross-chain messaging is evolving from "move tokens between chains" to "call any function on any chain." LayerZero leads by integration count (50+ chains) with its composable OApp framework — developers build cross-chain applications, not just bridges. Messages cost $0.05-$0.50 and take 1-5 minutes. Chainlink CCIP is the institutional choice — conservative design with rate limits and a separate Risk Management Network, but costs $0.50-$5.00 per message. Hyperlane is uniquely permissionless — anyone can deploy it on any chain without permission, supporting 100+ chains. Wormhole pivoted from bridge to messaging, introducing NTT (Native Token Transfers) so projects can deploy native tokens on multiple chains without wrapped versions. The security model varies dramatically: LayerZero lets you choose your own verifiers (DVNs), CCIP relies on Chainlink's oracle network, Wormhole uses 19 guardians (13/19 threshold). IBC (Cosmos) remains the most battle-tested with 100M+ cross-chain packets transferred.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'iop-chain-abstraction',
+    type: 'card',
+    position: { x: -520, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'THE FUTURE',
+      title: 'Chain Abstraction',
+      content: 'Making chains invisible — one account, one balance, any chain. The user never needs to know which blockchain they\'re on.',
+      items: ['Particle Network — Universal Accounts, all chains', 'NEAR Chain Signatures — MPC-based cross-chain signing', 'Socket Protocol — chain abstraction SDK for dApps', 'Across — intent fills in 1-5 seconds', 'ERC-7683 — Cross-Chain Intent Standard (Across + Uniswap)', '10+ active solvers competing on Across'],
+      accentColor: '#d946ef',
+      category: 'bridge',
+      shortOverview: 'The emerging paradigm where users interact with one account across all chains — gas, bridging, and chain selection happen invisibly in the background.',
+      deepInsight: `Chain abstraction is the endgame for interoperability: users should never see or care about chains. Particle Network leads with Universal Accounts — one login gives you a single identity across EVM, Solana, Bitcoin, and Cosmos, with gas abstracted away. NEAR Chain Signatures use threshold MPC so one NEAR account can sign transactions on any chain (Bitcoin, Ethereum, Solana). Socket Protocol provides a developer SDK — apps embed chain abstraction so users never see bridging. The key standard emerging is ERC-7683 (proposed by Across + Uniswap): users sign an "intent" message describing desired outcomes across chains, and solvers/fillers compete to fulfill it. This creates a competitive market — 10+ active fillers on Across race to deliver the best price and speed. The intent model is powerful because it separates "what the user wants" from "how to execute it," letting sophisticated solvers handle the multi-chain complexity.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'iop-unified-liquidity',
+    type: 'card',
+    position: { x: 80, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'THE FUTURE',
+      title: 'Unified Liquidity & Superchains',
+      content: 'Ecosystem-level solutions: Polygon AggLayer and Optimism Superchain aim to make their chain ecosystems feel like one network.',
+      items: ['AggLayer — ZK proof aggregation, unified bridge', 'Superchain — OP Stack chains sharing bridge + sequencer', 'Base (~$14B TVL), OP Mainnet (~$8B), Mode (~$500M)', 'AggLayer V1 live, V2 (real ZK aggregation) in dev', 'Superchain cross-chain messaging on testnet', 'Revenue sharing: OP Stack chains contribute sequencer fees'],
+      accentColor: '#d946ef',
+      category: 'bridge',
+      shortOverview: 'Ecosystem-level unification strategies — Polygon AggLayer aggregates ZK proofs across chains while Optimism Superchain shares a bridge and sequencer among OP Stack chains.',
+      deepInsight: `Two competing visions are racing to unify their respective ecosystems. Polygon's AggLayer aggregates ZK proofs from multiple chains (Polygon PoS, zkEVM, OKX X Layer, Astar zkEVM) into a single proof submitted to Ethereum — all connected chains share liquidity via one unified bridge contract. V1 is live with pessimistic proofs; V2 (real ZK proof aggregation) is in development. Optimism's Superchain takes a different approach: all OP Stack chains (Base ~$14B TVL, OP Mainnet ~$8B, Zora, Mode ~$500M, World Chain ~$200M, Redstone) share a bridge contract and will eventually share a sequencer. Cross-chain L2↔L2 messaging is on testnet, targeting sub-1-minute transfers without routing through Ethereum L1. The key difference: AggLayer offers more chain sovereignty (any chain can connect), while Superchain requires using the OP Stack but provides tighter integration. Both create network effects — the more chains join, the more valuable the shared liquidity becomes.`,
+    },
+    style: { width: 300 },
+  },
+];
+
+export const interoperabilityEdges: Edge[] = [
+  { id: 'iop-ov-multi', source: 'iop-overview', target: 'iop-multi-chain-problem', ...E },
+  { id: 'iop-ov-bridge', source: 'iop-overview', target: 'iop-bridge-types', ...E },
+  { id: 'iop-ov-msg', source: 'iop-overview', target: 'iop-messaging-protocols', ...E },
+  { id: 'iop-multi-ca', source: 'iop-multi-chain-problem', target: 'iop-chain-abstraction', ...E },
+  { id: 'iop-bridge-ca', source: 'iop-bridge-types', target: 'iop-chain-abstraction', ...E },
+  { id: 'iop-msg-ul', source: 'iop-messaging-protocols', target: 'iop-unified-liquidity', ...E },
+  { id: 'iop-ca-ul', source: 'iop-chain-abstraction', target: 'iop-unified-liquidity', ...E },
+];

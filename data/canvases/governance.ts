@@ -1,0 +1,123 @@
+import { type Node, type Edge, MarkerType } from '@xyflow/react';
+import type { CanvasNodeData } from '../canvas-data';
+
+const E = {
+  style: { stroke: '#585858', strokeWidth: 1.5 },
+  markerEnd: { type: MarkerType.ArrowClosed, color: '#585858', width: 10, height: 10 },
+};
+
+export const governanceNodes: Node<CanvasNodeData>[] = [
+  {
+    id: 'gov-overview',
+    type: 'card',
+    position: { x: 0, y: -40 },
+    data: {
+      type: 'card',
+      title: 'Governance & DAOs',
+      subtitle: 'Decentralized Decision-Making',
+      content: 'How crypto protocols make collective decisions — from token-weighted voting to retroactive public goods funding. Billions of dollars governed by code and community.',
+      accentColor: '#8b5cf6',
+      category: 'identity',
+      shortOverview: 'DAO governance systems managing $30B+ in combined treasuries, with 5-20% average voter turnout and evolving models like Optimism\'s two-house system.',
+      deepInsight: 'DAOs (Decentralized Autonomous Organizations) represent the largest experiment in digital governance in human history. The top DAOs collectively manage over $30B in treasuries — Optimism alone holds ~$8B+, Arbitrum ~$5B+, Uniswap ~$4B+. Yet the reality is messy: average voter turnout is 5-20%, whale dominance means the top 10 addresses often control 30-60% of voting power, and governance attacks (Beanstalk: $182M drained via flash loan voting) expose fundamental design flaws. The frontier is models like Optimism\'s two-house system (Token House + Citizens House) and retroactive public goods funding. Understanding governance is critical because every major DeFi protocol you use is governed by a DAO — and its decisions directly affect your funds.',
+    },
+    style: { width: 380 },
+  },
+  {
+    id: 'gov-what-is-dao',
+    type: 'card',
+    position: { x: -520, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'DAO FUNDAMENTALS',
+      title: 'What is a DAO?',
+      content: 'Decentralized Autonomous Organizations — entities governed by token holders through on-chain and off-chain voting, with treasuries managed by smart contracts.',
+      items: ['Optimism: ~$8B+ treasury (largest DAO)', 'Arbitrum: ~$5B+ treasury', 'Uniswap: ~$4B+ treasury', 'MakerDAO/Sky: ~$3B+ (most diversified)', 'Aave: ~$1.5B+ across multiple chains', 'Safe (Gnosis Safe): $100B+ secured in multisigs'],
+      accentColor: '#8b5cf6',
+      category: 'identity',
+      shortOverview: 'DAOs are internet-native organizations where governance power is distributed to token holders — the top 12 DAOs collectively manage $30B+ in treasuries.',
+      deepInsight: `A DAO is an organization where rules are encoded in smart contracts and decisions are made by token holders voting on proposals. The concept dates to "The DAO" in 2016 (which was famously hacked for $60M, causing the ETH/ETC fork). Modern DAOs range from protocol governance (Uniswap, Aave) to investment clubs (MetaCartel) to social communities (Nouns). The largest treasuries are dominated by L2 DAOs: Optimism (~$8B+) and Arbitrum (~$5B+) due to massive initial token allocations. A critical caveat: most DAO treasuries are denominated in their own governance token, creating circular valuation — if the token drops 50%, the treasury drops 50%. MakerDAO stands out with a diversified treasury including real-world assets (RWA). Legal structures vary from Wyoming DAO LLCs to Cayman Foundation Companies, with the Ooki DAO case (2023) establishing that DAO token holders can be held personally liable as an "unincorporated association."`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'gov-voting-mechanisms',
+    type: 'card',
+    position: { x: -100, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'DAO FUNDAMENTALS',
+      title: 'Voting Mechanisms',
+      content: 'How decisions actually get made — from gasless Snapshot votes to on-chain execution through Governor contracts and timelocks.',
+      items: ['Snapshot: 35,000+ DAOs, gasless off-chain voting', 'Tally: 500+ DAOs, on-chain governance UI', 'OpenZeppelin Governor: standard smart contract framework', 'Typical flow: Forum → Snapshot → On-chain → Timelock', 'Delegation: Karma, Tally profiles for expert delegates', 'Optimistic governance: passes unless vetoed'],
+      accentColor: '#8b5cf6',
+      category: 'identity',
+      shortOverview: 'Governance tooling spans gasless Snapshot votes (35,000+ DAOs) to on-chain Governor contracts with automatic timelock execution — each with tradeoffs of cost, trust, and security.',
+      deepInsight: `DAO voting typically follows a 4-step pipeline. First, informal discussion on Discourse or Commonwealth forums. Second, a temperature check on Snapshot — gasless (signed messages, no gas cost) with flexible voting strategies (token-weighted, quadratic, NFT-based). Third, a binding on-chain vote through Tally or Governor contracts — this costs gas, which deters small holders but creates a trustless, automatic execution path. Fourth, a timelock delay (typically 24-48 hours) before execution — the last line of defense against malicious proposals. The key tension: Snapshot is used by 35,000+ DAOs because it's free, but it requires trusting a multisig to execute the result. On-chain voting (Tally, ~500+ DAOs) is trustless but expensive. Emerging patterns include optimistic governance (proposals pass unless vetoed — reducing overhead), and tools like Karma and Agora for delegate reputation tracking.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'gov-notable-daos',
+    type: 'card',
+    position: { x: 320, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'DAO MODELS',
+      title: 'Notable DAOs & Models',
+      content: 'Optimism\'s two-house governance, Nouns\' daily auctions, and MakerDAO\'s SubDAO restructuring — innovative models pushing governance forward.',
+      items: ['Optimism: Token House + Citizens House (bicameral)', 'RetroPGF: $59M+ distributed across 5 rounds', 'Citizens House: ~150-300 soulbound NFT holders', 'Nouns: 1 NFT/day auction, 30-50% voter turnout', 'MakerDAO → Sky: SubDAO restructuring', 'Aave: 7-15% turnout, 3,000-8,000 unique voters/year'],
+      accentColor: '#8b5cf6',
+      category: 'identity',
+      shortOverview: 'Leading DAOs are experimenting with novel governance: Optimism\'s bicameral system, retroactive public goods funding ($59M+ distributed), and MakerDAO\'s SubDAO architecture.',
+      deepInsight: `Optimism pioneered the most ambitious governance experiment: a two-house system. The Token House (vote with OP tokens) handles protocol upgrades and treasury allocation. The Citizens House (~150-300 members with soulbound NFTs) manages Retroactive Public Goods Funding — the idea that "it's easier to agree on what was useful than what will be useful." Across 5 RetroPGF rounds, $59M+ has been distributed to 1,100+ projects. Round 3 alone allocated $30M to 501 projects for developer tooling, education, and infrastructure. Nouns DAO takes a different approach: one NFT auctioned daily, each NFT = one vote, achieving 30-50% participation (vs 5-10% for most token DAOs) thanks to a small, engaged holder base. MakerDAO's restructuring into "Sky" introduced SubDAOs — semi-autonomous units (Spark for lending, etc.) with their own governance, reducing bottlenecks at the core level. The lesson: one-size-fits-all governance doesn't work; the best DAOs are experimenting with hybrid models.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'gov-dao-challenges',
+    type: 'card',
+    position: { x: -320, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'CHALLENGES & ATTACKS',
+      title: 'DAO Challenges & Attacks',
+      content: 'Voter apathy, whale dominance, governance attacks, and the legal minefield — the hard problems of decentralized governance.',
+      items: ['Average voter turnout: 5-20%', 'Top 10 addresses often control 30-60% of votes', 'Beanstalk: $182M drained via flash loan governance', 'Tornado Cash: malicious proposal with hidden code', 'Build Finance: hostile takeover via token accumulation', 'Ooki DAO: CFTC held token holders personally liable'],
+      accentColor: '#8b5cf6',
+      category: 'identity',
+      shortOverview: 'DAO governance faces systemic challenges — 5-20% turnout, whale dominance (top 10 = 30-60% of votes), flash loan attacks ($182M Beanstalk), and unresolved legal liability.',
+      deepInsight: `The governance attack surface is larger than most realize. Flash loan voting (Beanstalk, April 2022) showed that without timelocks, an attacker can borrow $1B, achieve quorum, pass a malicious proposal, drain the treasury, and repay the loan — all in a single transaction. The attacker profited ~$80M. Tornado Cash governance (May 2023) demonstrated hidden code attacks: a seemingly innocuous proposal contained code granting 1.2M fake TORN votes. Build Finance (February 2022) was a slow hostile takeover: the attacker accumulated tokens on the open market, gained majority, minted unlimited tokens, and dumped them. Beyond attacks, structural problems persist: voter apathy (most holders never vote), delegate concentration (a16z, Blockchain Capital, Wintermute vote across dozens of DAOs), and governance fatigue (too many proposals, declining participation per vote). Legally, the Ooki DAO case established that DAO participants can face personal liability — making legal wrappers (Wyoming LLC, Cayman Foundation) increasingly essential.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'gov-on-chain-execution',
+    type: 'card',
+    position: { x: 140, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'CHALLENGES & ATTACKS',
+      title: 'On-Chain Execution & Legal',
+      content: 'The final step — how proposals become reality, and the global patchwork of legal frameworks governing DAOs.',
+      items: ['Timelocks: 24-48 hour delay before execution', 'Guardian/veto mechanisms for emergency situations', 'Wyoming DAO LLC Act (2021) — first US DAO law', 'Cayman Foundation Company — used by Uniswap, Aave', 'Switzerland Association — Ethereum Foundation, Lido', 'MiCA (EU): may restrict "anonymous crypto-assets"'],
+      accentColor: '#8b5cf6',
+      category: 'identity',
+      shortOverview: 'On-chain governance execution requires timelocks and veto mechanisms, while the legal landscape spans Wyoming DAO LLCs to Cayman Foundations — with no global standard.',
+      deepInsight: `The gap between a passed vote and on-chain execution is where security lives. Timelocks (24-48 hours standard) give the community time to review and potentially veto malicious proposals — Beanstalk lacked this, enabling instant execution of a $182M theft. Guardian councils (multisigs with emergency veto power) provide a safety net but introduce centralization. The legal landscape is fragmented: Wyoming's DAO LLC Act (2021) was the first US framework, allowing smart contracts as operating agreements. The Cayman Islands Foundation Company (used by Uniswap Foundation, Aave) provides limited liability without taxation. Switzerland's Verein (Association) structure hosts the Ethereum Foundation and Lido. The key legal risk: without a wrapper, DAO members may face unlimited personal liability (established by CFTC v. Ooki DAO). Securities law adds another layer — governance tokens may be securities under the Howey test. The EU's MiCA regulation threatens to restrict "anonymous crypto-assets" at exchanges, potentially impacting privacy-preserving governance mechanisms. The trend is clear: DAOs need legal structure, not just code.`,
+    },
+    style: { width: 300 },
+  },
+];
+
+export const governanceEdges: Edge[] = [
+  { id: 'gov-ov-dao',     source: 'gov-overview',          target: 'gov-what-is-dao',       ...E },
+  { id: 'gov-ov-voting',  source: 'gov-overview',          target: 'gov-voting-mechanisms', ...E },
+  { id: 'gov-ov-notable', source: 'gov-overview',          target: 'gov-notable-daos',      ...E },
+  { id: 'gov-dao-voting',  source: 'gov-what-is-dao',      target: 'gov-voting-mechanisms', ...E },
+  { id: 'gov-voting-notable', source: 'gov-voting-mechanisms', target: 'gov-notable-daos',  ...E },
+  { id: 'gov-dao-challenges', source: 'gov-what-is-dao',   target: 'gov-dao-challenges',    ...E },
+  { id: 'gov-voting-challenges', source: 'gov-voting-mechanisms', target: 'gov-dao-challenges', ...E },
+  { id: 'gov-notable-exec', source: 'gov-notable-daos',    target: 'gov-on-chain-execution', ...E },
+  { id: 'gov-challenges-exec', source: 'gov-dao-challenges', target: 'gov-on-chain-execution', ...E },
+];

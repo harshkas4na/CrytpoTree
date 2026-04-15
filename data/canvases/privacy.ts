@@ -1,0 +1,123 @@
+import { type Node, type Edge, MarkerType } from '@xyflow/react';
+import type { CanvasNodeData } from '../canvas-data';
+
+const E = {
+  style: { stroke: '#585858', strokeWidth: 1.5 },
+  markerEnd: { type: MarkerType.ArrowClosed, color: '#585858', width: 10, height: 10 },
+};
+
+export const privacyNodes: Node<CanvasNodeData>[] = [
+  {
+    id: 'prv-overview',
+    type: 'card',
+    position: { x: 0, y: -40 },
+    data: {
+      type: 'card',
+      title: 'Privacy Technologies',
+      subtitle: 'The Right to Transact Privately',
+      content: 'From Zcash shielded pools to FHE-powered chains — the technologies, protocols, and legal battles defining financial privacy in the blockchain era.',
+      accentColor: '#a855f7',
+      category: 'zk',
+      shortOverview: 'Blockchain privacy technologies — ZK proofs, FHE, MPC, stealth addresses, and privacy chains — navigating the tension between transparency and the right to financial privacy.',
+      deepInsight: 'Blockchains are radically transparent by default — every transaction, every balance, every interaction is permanently public. This is great for auditability but terrible for privacy: your employer, your landlord, and every stranger can see your entire financial life. The privacy stack is evolving rapidly: Zcash pioneered shielded transactions (10-12% of ZEC in shielded pools), Tornado Cash mixed $7B+ before being sanctioned (and later unsanctioned by the 5th Circuit), Aztec is building a private L2 with encrypted state, and FHE promises computation on encrypted data (currently 1,000-10,000x slower than plaintext). The legal landscape is equally dramatic: the Tornado Cash case established that immutable smart contracts cannot be sanctioned as "property," while the Dutch court sentenced developer Alexey Pertsev to 5+ years. The future likely combines multiple privacy primitives — ZK for verification, FHE for private computation, stealth addresses for receiving privacy.',
+    },
+    style: { width: 380 },
+  },
+  {
+    id: 'prv-privacy-problem',
+    type: 'card',
+    position: { x: -520, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'THE PROBLEM',
+      title: 'The Privacy Problem',
+      content: 'Why blockchain transparency is a double-edged sword — and why financial privacy is essential for adoption, security, and human rights.',
+      items: ['Every ETH address is fully transparent forever', 'Employers, landlords, merchants can see all balances', 'Transparency enables targeted phishing/attacks', 'Businesses can\'t use public chains (competitor intelligence)', 'Privacy coins delisted from exchanges in Japan, Korea, Australia', 'EU MiCA restricts "anonymous crypto-assets"'],
+      accentColor: '#a855f7',
+      category: 'zk',
+      shortOverview: 'Blockchain\'s radical transparency means everyone can see every transaction — creating real problems for individuals, businesses, and adoption.',
+      deepInsight: `Imagine if your bank account was public — your salary, spending habits, savings, and every transfer visible to anyone who knows your name. That's the reality of using Ethereum or Bitcoin with a known address. For individuals, it means targeted phishing attacks (hackers prioritize high-balance wallets), social engineering, and loss of financial privacy. For businesses, it's even worse: competitors can see treasury management, payroll, supplier payments, and strategic moves. DeFi whales regularly use fresh wallets to avoid front-running, but chain analysis firms (Chainalysis, Elliptic) can often link addresses through behavior patterns. The regulatory response has been hostile: Japan, South Korea, and Australia have pressured exchanges to delist privacy coins (Monero, Zcash, Dash). The EU's MiCA regulation restricts "anonymous crypto-assets" at exchanges. Monero was delisted from Binance in 2024. Yet the 5th Circuit's Tornado Cash ruling (November 2024) was a landmark victory — immutable code cannot be sanctioned as a foreign national's "property."`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'prv-privacy-chains',
+    type: 'card',
+    position: { x: -100, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'PRIVACY PROTOCOLS',
+      title: 'Privacy Chains',
+      content: 'Dedicated privacy blockchains — from Zcash\'s shielded pools to Aztec\'s encrypted L2, building privacy at the protocol level.',
+      items: ['Zcash: 10-12% of ZEC in shielded pools, 820%+ price surge', 'Orchard pool: Halo2 proofs, no trusted setup', 'Aztec: private L2, encrypted UTXO model, Noir language', 'Aztec testnet running, mainnet targeting 2026', 'Secret Network: TEE-based privacy (Intel SGX)', 'Oasis Network: confidential compute via TEEs'],
+      accentColor: '#a855f7',
+      category: 'zk',
+      shortOverview: 'Privacy-native chains — Zcash (10-12% shielded, Halo2 proofs), Aztec (encrypted L2, Noir language), Secret Network (TEE-based) — each taking different approaches to on-chain privacy.',
+      deepInsight: `Zcash is the OG privacy chain, launched in 2016 with zero-knowledge proofs enabling fully shielded transactions. Its tech has evolved through three generations: Sprout (original, deprecated), Sapling (faster proofs, 2018), and Orchard (Halo2 — no trusted setup, recursive proofs, 2022). Despite the technology, adoption remains modest: only 10-12% of circulating ZEC (~1.5-2M) sits in shielded pools, and just 15-25% of transactions are shielded. The 820%+ price surge in late 2024/early 2025 reflected growing pro-privacy sentiment after Tornado Cash sanctions were reversed. Aztec is the most ambitious privacy project: a ZK rollup on Ethereum where the state itself is encrypted. It uses an encrypted UTXO model (notes, not accounts), client-side proving (users generate ZK proofs on their own device), and Noir — a Rust-like domain-specific language for ZK circuits that's gaining traction beyond Aztec. Secret Network and Oasis take a different approach: TEEs (Trusted Execution Environments) provide near-native speed but require trusting hardware manufacturers (Intel SGX has had side-channel attacks).`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'prv-privacy-layers',
+    type: 'card',
+    position: { x: 320, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'PRIVACY PROTOCOLS',
+      title: 'Privacy Layers & Mixers',
+      content: 'Privacy as a service — mixing protocols, stealth addresses, and privacy layers that add anonymity to existing chains.',
+      items: ['Tornado Cash: $7B+ mixed, sanctioned 2022, unsanctioned 2025', 'TORN token surged 400%+ post-sanctions removal', '5th Circuit: immutable code can\'t be sanctioned', 'Stealth addresses (EIP-5564): one-time receiving addresses', 'Umbra Protocol: $80M+ transferred via stealth addresses', 'Only ~10-50K unique stealth addresses used (low adoption)'],
+      accentColor: '#a855f7',
+      category: 'zk',
+      shortOverview: 'Privacy layers add anonymity to existing chains — Tornado Cash ($7B+ mixed, landmark legal case), stealth addresses (EIP-5564), and Umbra Protocol ($80M+ transferred).',
+      deepInsight: `Tornado Cash was the most significant privacy tool on Ethereum — a mixer that broke the on-chain link between sender and receiver using ZK proofs. It mixed $7B+ before OFAC sanctioned its smart contracts in August 2022 — the first time open-source code was sanctioned. Developer Alexey Pertsev was sentenced to 5 years, 4 months in the Netherlands. But the 5th Circuit ruling (November 2024) was transformative: immutable smart contracts are not "property" of a foreign national and cannot be sanctioned. OFAC removed Tornado Cash from the sanctions list in January 2025, DOJ dropped charges against Roman Storm in March 2025, and the TORN token surged 400%+. Stealth addresses (EIP-5564, now Final) offer a lighter approach: generate a one-time address for each transaction so only sender and recipient know the connection. Umbra Protocol has been live since 2021, transferring $80M+ on Ethereum, Polygon, Arbitrum, and Optimism — but adoption remains low (~10-50K unique addresses) due to UX complexity and gas costs for claiming. Vitalik Buterin champions stealth addresses as "minimum-viable privacy" for Ethereum.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'prv-privacy-tech',
+    type: 'card',
+    position: { x: -320, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'PRIVACY TECHNOLOGY',
+      title: 'Privacy Tech Stack',
+      content: 'The four pillars of privacy technology — ZK proofs, FHE, MPC, and TEE — each with different trust models, performance, and use cases.',
+      items: ['ZK Proofs: production-ready, fast verification, slow proving', 'FHE: compute on encrypted data, 1,000-10,000x overhead', 'FHE addition: ~50ms, multiplication: ~150ms, comparison: ~200ms', 'MPC: multi-party computation (Fireblocks: $200B+ managed)', 'TEE: near-native speed but trusts hardware (Intel SGX)', 'Future: ZK+FHE+MPC combinations for full-stack privacy'],
+      accentColor: '#a855f7',
+      category: 'zk',
+      shortOverview: 'Four privacy technologies with different tradeoffs: ZK proofs (production-ready), FHE (1,000x overhead but improving 10x every 2-3 years), MPC ($200B+ secured), and TEE (fast but hardware-dependent).',
+      deepInsight: `Privacy technology exists on a spectrum of trust, performance, and capability. ZK proofs are the most mature: production-ready in rollups (zkSync, StarkNet) and private transactions (Zcash, Aztec). They prove statements without revealing inputs but are limited to verification — not general private computation. FHE (Fully Homomorphic Encryption) is the holy grail: compute on encrypted data without ever decrypting. Zama's benchmarks show encrypted addition at ~50ms, multiplication at ~150ms, comparison at ~200ms — 1,000-10,000x slower than plaintext. Key sizes are 50-200MB+, ciphertext expansion is 100-1000x, and RAM requirements are 16-64GB+. But performance improves ~10x every 2-3 years through GPU acceleration and algorithm improvements. Practical today for simple use cases (private balances, sealed-bid auctions, private voting). Fhenix and Inco Network are building FHE-powered chains. MPC (Multi-Party Computation) is production-proven: Fireblocks uses MPC for key management, securing $200B+ in assets. TEEs (Intel SGX) offer near-native speed but require trusting the hardware manufacturer — and Intel SGX has suffered side-channel attacks. The future is hybrid: ZK for verification, FHE for private compute, MPC for key management, TEE for speed.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'prv-compliant-privacy',
+    type: 'card',
+    position: { x: 140, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'PRIVACY TECHNOLOGY',
+      title: 'Compliant Privacy',
+      content: 'The emerging category that bridges privacy and regulation — proving you\'re not sanctioned without revealing your identity.',
+      items: ['Aztec: privacy + selective disclosure for compliance', 'Zcash: optional transparency (transparent + shielded addresses)', 'Stealth addresses: lighter privacy, easier compliance', 'ZK-based identity proofs: prove age, residency without revealing data', 'Monero: fully private, delisted from Binance (2024)', 'Tornado Cash ruling: code ≠ sanctionable property'],
+      accentColor: '#a855f7',
+      category: 'zk',
+      shortOverview: 'Compliant privacy is the emerging middle ground — ZK proofs that let you prove compliance (not sanctioned, verified identity) without revealing personal data or transaction history.',
+      deepInsight: `The privacy debate is evolving from "privacy vs transparency" to "how much privacy, with what compliance guarantees?" Fully opaque privacy (Monero) faces delisting pressure — Binance dropped XMR in 2024, and major exchanges in Japan, South Korea, and Australia won't touch privacy coins. Zcash found a middle path: optional privacy, with both transparent and shielded addresses. Users (and regulators) can choose the level of privacy per transaction. Aztec is designing for "compliant privacy" from the ground up: selective disclosure lets users prove specific properties (not sanctioned, over 18, resident of a jurisdiction) without revealing their identity or transaction history, using ZK proofs. This is the most promising path for institutional adoption — banks and funds need privacy (can't reveal positions) but also need compliance (AML/KYC). ZK-based identity systems can prove "I have a valid passport from an approved country" without revealing which country, name, or passport number. The Tornado Cash ruling (5th Circuit) established a crucial principle: code running autonomously cannot be sanctioned — a legal foundation for privacy infrastructure. The trend is toward privacy as a spectrum: default privacy for transactions, selective disclosure for compliance, full transparency for public goods. FHE improvement trajectories suggest practical private DeFi by 2027-2028.`,
+    },
+    style: { width: 300 },
+  },
+];
+
+export const privacyEdges: Edge[] = [
+  { id: 'prv-ov-problem',   source: 'prv-overview',          target: 'prv-privacy-problem',  ...E },
+  { id: 'prv-ov-chains',    source: 'prv-overview',          target: 'prv-privacy-chains',   ...E },
+  { id: 'prv-ov-layers',    source: 'prv-overview',          target: 'prv-privacy-layers',   ...E },
+  { id: 'prv-problem-chains', source: 'prv-privacy-problem', target: 'prv-privacy-chains',   ...E },
+  { id: 'prv-problem-layers', source: 'prv-privacy-problem', target: 'prv-privacy-layers',   ...E },
+  { id: 'prv-chains-tech',  source: 'prv-privacy-chains',    target: 'prv-privacy-tech',     ...E },
+  { id: 'prv-layers-tech',  source: 'prv-privacy-layers',    target: 'prv-privacy-tech',     ...E },
+  { id: 'prv-tech-compliant', source: 'prv-privacy-tech',    target: 'prv-compliant-privacy', ...E },
+  { id: 'prv-layers-compliant', source: 'prv-privacy-layers', target: 'prv-compliant-privacy', ...E },
+];

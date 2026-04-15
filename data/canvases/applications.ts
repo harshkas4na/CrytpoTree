@@ -1,0 +1,121 @@
+import { type Node, type Edge, MarkerType } from '@xyflow/react';
+import type { CanvasNodeData } from '../canvas-data';
+
+const E = {
+  style: { stroke: '#585858', strokeWidth: 1.5 },
+  markerEnd: { type: MarkerType.ArrowClosed, color: '#585858', width: 10, height: 10 },
+};
+
+export const applicationsNodes: Node<CanvasNodeData>[] = [
+  {
+    id: 'app-overview',
+    type: 'card',
+    position: { x: 0, y: -40 },
+    data: {
+      type: 'card',
+      title: 'Applications & Culture',
+      subtitle: 'Where Crypto Meets the Real World',
+      content: 'NFTs, gaming, social, payments, and memecoins — the consumer-facing layer of crypto. From $25B+ annual NFT volume at peak to fully on-chain autonomous worlds.',
+      accentColor: '#ec4899',
+      category: 'nft',
+      shortOverview: 'The consumer application layer — NFTs, blockchain gaming, social protocols, stablecoin payments, and the memecoin phenomenon.',
+      deepInsight: 'Applications are where crypto touches ordinary people. The NFT market peaked at $6B/month in January 2022, crashed 80-90%, and stabilized around $600M-$1B/month by Q1 2026 — shifting from speculative PFPs to utility (gaming items, IP licensing, membership). Blockchain gaming hit 2-3M daily active wallets, with Ronin and Immutable X emerging as dominant gaming chains. Farcaster grew to 1M+ accounts as the crypto-native social protocol, spawning the DEGEN token ($500M+ market cap) and Frames (interactive mini-apps in posts). Stablecoin annual volume reached $46T — surpassing Visa ($14T) and Mastercard ($9T) combined, though most is DeFi/arbitrage rather than payments. Pump.fun created 10M+ tokens, generating $500M+ in platform revenue, proving that permissionless token creation is a massively profitable business even if 99.95% of tokens go to zero.',
+    },
+    style: { width: 380 },
+  },
+  {
+    id: 'app-nfts',
+    type: 'card',
+    position: { x: -700, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'DIGITAL OWNERSHIP',
+      title: 'NFTs & Digital Collectibles',
+      content: 'From $6B/month peak to a maturing market focused on IP, utility, and multi-chain expansion.',
+      items: ['CryptoPunks ~30 ETH floor (~$90K), BAYC ~15 ETH', 'Blur dominates Ethereum (~60% share)', 'Magic Eden leads Solana (~80%+ share)', 'Bitcoin Ordinals: $3B+ volume in 2024', 'Compressed NFTs (Solana): mass-mint near zero cost', 'IP play: Pudgy Penguins toys at Walmart, PENGU token'],
+      accentColor: '#ec4899',
+      category: 'nft',
+      shortOverview: 'The NFT market after the hype: consolidated around ~10-15 blue-chip collections, shifting from speculation to IP licensing, utility, and multi-chain expansion via Ordinals.',
+      deepInsight: `The NFT market tells a story of speculation → crash → maturation. Monthly volume went from $200M (Jan 2021) to $6B (Jan 2022 peak) to $500M (Jul 2024) to stabilizing at $600M-$1B (Q1 2026). Only ~10-15 collections maintain significant floor prices — CryptoPunks (~$90K floor), BAYC (~$45K), Pudgy Penguins (~$30K). The marketplace war reshaped the industry: Blur captured ~60% of Ethereum volume through aggressive trader rewards, forcing OpenSea into a strategic shift. The biggest innovation was IP extension — Pudgy Penguins launched physical toys at Walmart and the PENGU token, proving NFT projects can become real consumer brands. Bitcoin Ordinals created an entirely new market ($3B+ in 2024), while Solana's compressed NFTs (cNFTs) enabled mass-minting at near-zero cost — fundamentally changing the economics. The surviving thesis: NFTs as provable digital ownership for gaming items, membership, IP rights, and identity — not just speculative JPEGs.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'app-gaming',
+    type: 'card',
+    position: { x: -320, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'INTERACTIVE',
+      title: 'Blockchain Gaming',
+      content: 'Play-to-earn died. Play-and-earn emerged. Fully on-chain games offer composability. 2-3M daily active gaming wallets.',
+      items: ['Pixels ~200K DAU (Ronin), Sweat ~500K (NEAR)', 'Ronin ~$200M gaming TVL (Sky Mavis, free txs)', 'Immutable X ~$150M TVL (ZK rollup, gasless NFTs)', 'Fully on-chain: MUD, Dojo, World Engine frameworks', 'Dark Forest — ZK proofs for hidden information', 'P2E dead → Play-and-Earn + autonomous worlds'],
+      accentColor: '#f97316',
+      category: 'gaming',
+      shortOverview: 'Blockchain gaming evolved from unsustainable play-to-earn (Axie Infinity) to play-and-earn models and fully on-chain autonomous worlds with 2-3M daily active wallets.',
+      deepInsight: `Axie Infinity proved blockchain gaming could attract millions (1.5M peak DAU), then proved play-to-earn was unsustainable — a Ponzi where new players funded existing players' earnings. The industry reset. Today, 2-3M daily active wallets play blockchain games, led by Pixels (~200K DAU on Ronin) and Sweat Economy (~500K on NEAR). Gaming-specific chains emerged: Ronin ($200M TVL, free transactions), Immutable X ($150M, gasless NFT trading), Beam ($100M, Avalanche subnet), Xai ($50M, Arbitrum L3). The most exciting frontier is fully on-chain games where ALL game logic lives in smart contracts — not just assets. MUD framework (Lattice/0xPARC) powers games on OP Stack, Dojo (Cartridge) builds on StarkNet. Dark Forest pioneered using ZK proofs for hidden information in a fully verifiable game. These "autonomous worlds" persist forever, are fully composable (anyone can build mods/clients), and cannot be shut down. The tradeoff: on-chain computation is slow and expensive, limiting game complexity.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'app-socialfi',
+    type: 'card',
+    position: { x: 80, y: 340 },
+    data: {
+      type: 'card',
+      groupLabel: 'SOCIAL',
+      title: 'SocialFi & Farcaster',
+      content: 'Decentralized social protocols: Farcaster leads with 1M+ accounts, while friend.tech proved social tokens need real utility to survive.',
+      items: ['Farcaster: 1M+ accounts, 50-100K DAU', 'Frames: interactive mini-apps in posts', 'DEGEN token: $500M+ market cap from tipping culture', 'Warpcast primary client, but protocol is open', 'friend.tech: $50M TVL peak → near-dead by 2025', 'Lesson: social tokens need utility, not just speculation'],
+      accentColor: '#8b5cf6',
+      category: 'social',
+      shortOverview: 'Decentralized social networks where users own their identity and content — Farcaster leads with open protocol design, while friend.tech\'s rise and fall revealed the limits of financialized social.',
+      deepInsight: `Crypto social has two cautionary tales and one success story. friend.tech exploded to $50M+ TVL and 250K+ users in August 2023 with "buy keys to access someone's chat" — exponential bonding curves created exciting early dynamics. But it was a greater-fool game: no real social utility beyond speculation, whales manipulated their own keys, and when the founder abandoned the project in September 2024, it collapsed to <$1M TVL. The FRIEND token launched at $3B+ FDV and immediately crashed. Farcaster took the opposite approach: build a genuine open social protocol first, financialize later. It grew to 1M+ accounts and 50-100K DAU by Q1 2026. Its killer feature was Frames — interactive mini-apps embedded in posts (mint NFTs, vote, play games, execute DeFi). Frames turned the feed into a platform. The DEGEN tipping token ($500M+ market cap) and Moxie attention economy emerged organically from the community. Key architectural insight: Farcaster IDs are on-chain (OP Mainnet) but messages are stored on decentralized Hubs — separating identity (permanent, on-chain) from content (fast, off-chain). Anyone can build alternative clients.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'app-payments-culture',
+    type: 'card',
+    position: { x: -520, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'REAL-WORLD IMPACT',
+      title: 'Stablecoin Payments',
+      content: 'Stablecoins settled $46T in 2025 — surpassing Visa and Mastercard combined. Remittance savings of 80-95% over traditional channels.',
+      items: ['Stablecoins: $46T/yr, $126B/day', 'Visa: $14T/yr — stablecoins 3x Visa volume', 'Remittance savings: US→Mexico 80-90%, UK→Nigeria 90%+', 'Stripe: USDC payouts since 2024', 'Visa: stablecoin settlement pilots on Solana', 'GENIUS Act: first US stablecoin law (signed Jul 2025)'],
+      accentColor: '#ec4899',
+      category: 'payments',
+      shortOverview: 'Stablecoins as the killer app for payments — $46T annual volume, 80-95% cheaper remittances, and growing merchant adoption from Stripe, Visa, and PayPal.',
+      deepInsight: `Stablecoins may be crypto's most impactful real-world application. Annual stablecoin volume hit $46T in 2025 — 3x Visa's $14T, though most is DeFi trading rather than payments. The genuine payments use case is growing 100%+ year-over-year, estimated at $1-3T. The clearest win is remittances: sending money from US to Mexico costs 5-7% via traditional channels but <1% via stablecoins — 80-90% savings. UK to Nigeria drops from 8-10% to <1%. For a $500 remittance, that's the difference between $50 in fees and $5. Settlement is seconds vs 1-5 business days. Major TradFi adoption validates the thesis: Stripe launched USDC payouts (2024), Visa is piloting stablecoin settlement on Solana and Ethereum, PayPal launched PYUSD, and Shopify accepts crypto via BitPay and Coinbase Commerce. The GENIUS Act (signed July 2025) provides regulatory clarity — requiring 1:1 reserves in US Treasuries, monthly attestations, and same-day redemption. This framework essentially banned algorithmic stablecoins while legitimizing asset-backed ones.`,
+    },
+    style: { width: 300 },
+  },
+  {
+    id: 'app-memecoins',
+    type: 'card',
+    position: { x: 80, y: 780 },
+    data: {
+      type: 'card',
+      groupLabel: 'CULTURE & SPECULATION',
+      title: 'Memecoins & Pump.fun',
+      content: 'Pump.fun created 10M+ tokens and earned $500M+ revenue. Only 0.005% reached $10M+ market cap. The casino layer of crypto.',
+      items: ['10M+ tokens created on pump.fun', 'Only ~2-3% migrated to Raydium (survived)', '0.005% reached $10M+ market cap (~500 tokens)', 'Platform revenue: $500M+ cumulative', 'Peak: 100K+ tokens/day, $500M+ daily volume', '$50B+ total volume facilitated'],
+      accentColor: '#fbbf24',
+      category: 'meme',
+      shortOverview: 'The memecoin phenomenon: pump.fun democratized token creation (10M+ tokens, $500M+ revenue) while exposing the speculative underbelly of crypto culture.',
+      deepInsight: `Pump.fun is the most profitable crypto application ever built relative to its simplicity. Anyone can create a token in 30 seconds for ~$2-4 (0.02 SOL). The platform takes a 1% trading fee on bonding curve trades and ~6 SOL per Raydium migration. Result: $500M+ cumulative revenue, $50B+ total volume facilitated. The numbers reveal the brutal economics: of 10M+ tokens created, only ~200-300K (~2-3%) survived to migrate to Raydium. Only ~50K (0.5%) reached $100K market cap. Only ~500 (0.005%) hit $10M+. Only ~20-30 reached $100M+. The average token lifespan is minutes to hours. At peak, 100K+ tokens were created daily with $500M+ in volume. Pump.fun democratized token creation — spawning cultural tokens, community experiments, and countless scams. It inspired clones on Base, Ethereum, and other chains. The deeper lesson: permissionless token creation is incredibly powerful infrastructure, even when most tokens are worthless. The platform captures value from the activity itself, not from token success.`,
+    },
+    style: { width: 300 },
+  },
+];
+
+export const applicationsEdges: Edge[] = [
+  { id: 'app-ov-nft', source: 'app-overview', target: 'app-nfts', ...E },
+  { id: 'app-ov-game', source: 'app-overview', target: 'app-gaming', ...E },
+  { id: 'app-ov-social', source: 'app-overview', target: 'app-socialfi', ...E },
+  { id: 'app-nft-pay', source: 'app-nfts', target: 'app-payments-culture', ...E },
+  { id: 'app-game-pay', source: 'app-gaming', target: 'app-payments-culture', ...E },
+  { id: 'app-social-meme', source: 'app-socialfi', target: 'app-memecoins', ...E },
+  { id: 'app-pay-meme', source: 'app-payments-culture', target: 'app-memecoins', ...E },
+];
